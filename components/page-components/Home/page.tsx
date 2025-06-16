@@ -9,6 +9,7 @@ import {
   CTAUsers,
   AnalyticsSection,
   BusinessPortalSection,
+  FindYourBusiness,
 } from "./index";
 
 export default function HomePage() {
@@ -63,6 +64,7 @@ export default function HomePage() {
         </div>
       </div>
 
+      <FindYourBusiness />
       <CTAUsers />
     </div>
   );

@@ -5,3 +5,4 @@ export { default as WhyChoose } from "./WhyChoose";
 export { default as CTAUsers } from "./CTAUsers";
 export { default as AnalyticsSection } from "./AnalyticsSection";
 export { default as BusinessPortalSection } from "./BusinessPortalSection";
+export { default as FindYourBusiness } from "./FindYourBusiness";
