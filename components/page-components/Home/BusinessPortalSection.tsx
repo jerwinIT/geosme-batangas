@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ChartLine, ArrowRight } from "lucide-react";
+import { ChartLine, ArrowRight, Briefcase } from "lucide-react";
 import { IoFootsteps } from "react-icons/io5";
 import { VscGraph } from "react-icons/vsc";
 import { IoMdTrendingUp } from "react-icons/io";
@@ -56,7 +56,9 @@ export default function BusinessPortalSection() {
 
             {/* Content Section */}
             <div className="w-full lg:w-1/2 text-center lg:text-left order-2">
-              <Badge>Business Portal</Badge>
+              <Badge icon={<Briefcase className="w-4 h-4 text-primary-500" />}>
+                Business Portal
+              </Badge>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-text">
                 <span className="text-primary-500">Business Portal</span> for
                 SME Owners

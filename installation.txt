@@ -1,0 +1,5 @@
+1. make sure you are in the right directory 'geosme-batangas'
+2. Go to your terminal
+3. type 'npm install' 
+4. type 'npm run' dev to run this application
+

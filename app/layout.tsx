@@ -31,21 +31,17 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider>
-          <div className="min-h-screen flex flex-col">
-            {/* Navigation */}
-            <ResponsiveNavbar />
+          {/* Navigation */}
+          <ResponsiveNavbar />
+          {/* Main Content */}
 
-            {/* Main Content */}
-            <main className="flex-1  pt-20 justify-center items-center">
-              {children}
-            </main>
+          {/* Main Content */}
+          {children}
 
-            {/* Footer */}
-            <Footer />
-
-            {/* Theme Toggle */}
-            <ThemeToggle />
-          </div>
+          {/* Footer */}
+          <Footer />
+          {/* Theme Toggle */}
+          <ThemeToggle />
         </ThemeProvider>
       </body>
     </html>

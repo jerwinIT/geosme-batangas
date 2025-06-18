@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ChartLine, ArrowRight } from "lucide-react";
+import { ChartLine, ArrowRight, AreaChart } from "lucide-react";
 import { IoFootsteps } from "react-icons/io5";
 import { VscGraph } from "react-icons/vsc";
 import { IoMdTrendingUp } from "react-icons/io";
@@ -34,7 +34,9 @@ export default function AnalyticsSection() {
           <div className="flex flex-col items-center justify-center lg:flex-row lg:items-center lg:justify-between gap-8">
             {/* Text on the left */}
             <div className="lg:w-1/2 text-center lg:text-left order-2 lg:order-1">
-              <Badge>SME Analytics</Badge>
+              <Badge icon={<AreaChart className="w-4 h-4 text-primary-500" />}>
+                SME Analytics
+              </Badge>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-text">
                 Location-based{" "}
                 <span className="text-primary-500">Analytics</span> & Market

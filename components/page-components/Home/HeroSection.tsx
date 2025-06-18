@@ -1,6 +1,6 @@
 import React from "react";
 
-import { BarChart3, Building2, MapPin, Star, Sparkles } from "lucide-react";
+import { Building2, MapPin, Sparkles } from "lucide-react";
 import CTAButton from "@/components/ui/Buttons/CTAButton";
 import Badge from "@/components/ui/badge";
 
