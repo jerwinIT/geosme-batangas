@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import {
-  ResponsiveNavbar,
-  Footer,
-  ThemeProvider,
-  ThemeToggle,
-} from "@/components/ui";
+import { ResponsiveNavbar, ThemeProvider, ThemeToggle } from "@/components/ui";
 
-import "./globals.css";
+import "../globals.css";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -39,7 +34,7 @@ export default function RootLayout({
           {children}
 
           {/* Footer */}
-          <Footer />
+
           {/* Theme Toggle */}
           <ThemeToggle />
         </ThemeProvider>

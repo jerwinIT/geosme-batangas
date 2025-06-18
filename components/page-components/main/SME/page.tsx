@@ -4,7 +4,7 @@ import {
   BusinessFeeds,
   Municipalities,
   SMEHero,
-} from "@/components/page-components/SME";
+} from "@/components/page-components/main/SME";
 import SearchBar from "@/components/ui/SearchBar";
 import Link from "next/link";
 import { Metadata } from "next";
