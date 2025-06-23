@@ -1,5 +1,5 @@
 import React from "react";
-import { SMEPage } from "@/components/page-components/main";
+import { SMEPage } from "@/components/main/page-components";
 
 export default function SmePage() {
   return (

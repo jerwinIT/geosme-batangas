@@ -5,7 +5,7 @@ import {
   Footer,
   ThemeProvider,
   ThemeToggle,
-} from "@/components/ui";
+} from "@/components/main/ui";
 
 import "../globals.css";
 
