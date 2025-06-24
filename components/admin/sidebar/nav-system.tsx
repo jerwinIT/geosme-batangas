@@ -1,6 +1,8 @@
 "use client";
 
 import { type LucideIcon } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import {
   SidebarGroup,
@@ -21,6 +23,7 @@ export function NavSystem({
   }[];
 }) {
   const { isMobile } = useSidebar();
+  const pathname = usePathname();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:border-t group-data-[collapsible=icon]:pt-4">
@@ -28,18 +31,23 @@ export function NavSystem({
         System Navigation
       </SidebarGroupLabel>
       <SidebarMenu>
-        {system.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span className="group-data-[collapsible=icon]:hidden">
-                  {item.name}
-                </span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
+        {system.map((item) => {
+          const isActive =
+            pathname === item.url || pathname.startsWith(item.url);
+
+          return (
+            <SidebarMenuItem key={item.name}>
+              <SidebarMenuButton asChild isActive={isActive}>
+                <Link href={item.url}>
+                  <item.icon />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    {item.name}
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

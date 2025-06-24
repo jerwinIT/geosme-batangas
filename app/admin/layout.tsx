@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import ThemeProvider from "@/components/main/ui/Theme/ThemeProvider";
+import { AppSidebar } from "@/components/admin/sidebar/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import "../globals.css";
-import { ThemeToggle } from "@/components/main/ui";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -27,8 +28,10 @@ export default function AdminLayout({
         suppressHydrationWarning
       >
         <ThemeProvider>
-          <ThemeToggle />
-          {children}
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>{children}</SidebarInset>
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
