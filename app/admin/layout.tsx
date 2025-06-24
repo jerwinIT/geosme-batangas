@@ -3,7 +3,7 @@ import { Poppins } from "next/font/google";
 import ThemeProvider from "@/components/main/ui/Theme/ThemeProvider";
 import { AppSidebar } from "@/components/admin/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
+import { ThemeToggle } from "@/components/main/ui";
 import "../globals.css";
 
 const font = Poppins({
@@ -30,8 +30,9 @@ export default function AdminLayout({
         <ThemeProvider>
           <SidebarProvider>
             <AppSidebar />
-            <SidebarInset>{children}</SidebarInset>
+            <SidebarInset className="bg-light-gray">{children}</SidebarInset>
           </SidebarProvider>
+          <ThemeToggle />
         </ThemeProvider>
       </body>
     </html>
