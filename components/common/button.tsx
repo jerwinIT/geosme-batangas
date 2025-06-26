@@ -13,6 +13,8 @@ const buttonVariants = cva(
         default:
           "bg-primary-500 text-primary-foreground shadow-xs hover:bg-primary-800",
         secondary: "bg-dark-gray text-white shadow-xs hover:bg-black",
+        outline:
+          "flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-300",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
@@ -52,8 +54,8 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
+      {Icon && <Icon className="h-4 w-4" />}
       {children}
-      {Icon && <Icon />}
     </Comp>
   );
 }

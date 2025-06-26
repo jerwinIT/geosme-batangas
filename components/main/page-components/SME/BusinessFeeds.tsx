@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from "react";
 import BusinessCard from "@/components/main/ui/Cards/BusinessCard";
 import BusinessCardSkeleton from "@/components/main/ui/Skeleton/BusinessCardSkeleton";
-import { Business } from "@/types/business";
-import { Button } from "@/components/main/ui/button";
+import { Button } from "@/components/common";
 import {
   ChevronLeft,
   ChevronRight,
