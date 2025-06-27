@@ -40,7 +40,7 @@ export const adminSidebarLinks = {
     },
     {
       title: "User Management",
-      url: "/admin/user",
+      url: "/admin/users",
       icon: User,
     },
     {
