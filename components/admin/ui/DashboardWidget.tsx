@@ -7,6 +7,8 @@ interface DashboardWidgetProps {
   icon?: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
+  onClick?: () => void;
+  clickable?: boolean;
 }
 
 const DashboardWidget: React.FC<DashboardWidgetProps> = ({
@@ -15,10 +17,15 @@ const DashboardWidget: React.FC<DashboardWidgetProps> = ({
   icon,
   footer,
   className = "",
+  onClick,
+  clickable = false,
 }) => {
   return (
     <div
-      className={`bg-white rounded-xl shadow p-4 h-32 flex flex-col item-start justify-center gap-4 ${className}`}
+      className={`bg-white rounded-xl shadow p-4 h-32 flex flex-col item-start justify-center gap-4 ${className} ${
+        clickable ? "cursor-pointer hover:shadow-md transition-shadow" : ""
+      }`}
+      onClick={clickable ? onClick : undefined}
     >
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-medium text-muted-foreground">{title}</h2>

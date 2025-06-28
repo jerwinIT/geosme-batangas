@@ -44,11 +44,6 @@ export const adminSidebarLinks = {
       icon: User,
     },
     {
-      title: "Analytics",
-      url: "/admin/analytics",
-      icon: ChartLine,
-    },
-    {
       title: "Reviews & Ratings",
       url: "/admin/reviews",
       icon: Star,
@@ -75,11 +70,7 @@ export const adminSidebarLinks = {
       url: "/admin/audit-logs",
       icon: ClipboardList,
     },
-    {
-      name: "Access Control",
-      url: "/admin/access-control",
-      icon: ShieldCheck,
-    },
+
     {
       name: "Notifications",
       url: "/admin/notifications",
