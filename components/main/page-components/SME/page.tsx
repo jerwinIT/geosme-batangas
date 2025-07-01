@@ -26,15 +26,7 @@ export default function SMEPage() {
           </div>
         </div>
 
-        {/* Municipalities Section */}
-        {/* <section className="mb-12">
-        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-text mb-6">
-            Browse by <span className="text-primary-500">Municipality</span>
-          </h2> */}
         <Municipalities />
-        {/* </div>
-      </section> */}
 
         {/* Separator Line */}
         <div className="flex justify-center py-8">

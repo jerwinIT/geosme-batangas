@@ -1,10 +1,12 @@
+"use client";
+
 import ThemeLogo from "@/components/main/ui/Theme/ThemeLogo";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/common";
 import { Input } from "@/components/common";
 import { Label } from "@/components/ui/label";
 
-export function LoginForm({
+export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
@@ -22,29 +24,48 @@ export function LoginForm({
               </div>
             </a>
             <h1 className="text-xl font-bold mt-4">
-              Welcome,<span className="text-primary-500"> Admin</span>!
+              Create your<span className="text-primary-500"> account</span>
             </h1>
           </div>
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="fullName">Full Name</Label>
               <Input
-                id="username"
+                id="fullName"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+            <div className="grid gap-3">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
                 required
               />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="password">Password</Label>
               <Input
+                id="password"
                 type="password"
                 placeholder="Enter your password"
                 required
               />
             </div>
+            <div className="grid gap-3">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm your password"
+                required
+              />
+            </div>
             <Button type="submit" className="w-full">
-              Login
+              Create Account
             </Button>
           </div>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -63,6 +84,12 @@ export function LoginForm({
               </svg>
               Continue with Google
             </Button>
+          </div>
+          <div className="text-muted-foreground text-center text-xs text-balance">
+            Already have an account?{" "}
+            <a href="#" className="underline underline-offset-4">
+              Sign in
+            </a>
           </div>
         </div>
       </form>

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { navLinks } from "@/constant/constant";
 import { HiBars3BottomRight } from "react-icons/hi2";
 import ThemeLogo from "@/components/main/ui/Theme/ThemeLogo";
-import Button from "@/components/main/ui/Buttons/Button";
+import { Button } from "@/components/common";
 import { ChevronDown } from "lucide-react";
 
 type NavProps = {
@@ -198,23 +198,22 @@ export default function Nav({ openNav }: NavProps) {
 
           <div className="h-6 w-[1px] bg-black/20"></div>
 
-          <Link href="/auth/login">
-            <Button
-              name="Login"
-              className={
-                isActiveLink("/auth/login") ? "ring-2 ring-[#d72323]/20" : ""
-              }
-            />
+          <Link href="/auth/user/login">
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
           </Link>
 
           <Link
-            href="/auth/signup"
+            href="/auth/user/register"
             className="relative group"
-            aria-current={isActiveLink("/auth/signup") ? "page" : undefined}
+            aria-current={
+              isActiveLink("/auth/user/register") ? "page" : undefined
+            }
           >
             <p
               className={`relative text-sm font-poppins font-normal leading-normal transition-colors duration-300 ${
-                isActiveLink("/auth/signup")
+                isActiveLink("/auth/user/register")
                   ? "text-[#d72323] font-medium"
                   : "text-text-secondary group-hover:text-[#d72323]"
               }`}
@@ -222,7 +221,7 @@ export default function Nav({ openNav }: NavProps) {
               Sign Up
               <span
                 className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ${
-                  isActiveLink("/auth/signup")
+                  isActiveLink("/auth/user/register")
                     ? "w-full bg-[#d72323]"
                     : "w-0 bg-black/50 group-hover:w-full group-hover:bg-[#d72323]"
                 }`}

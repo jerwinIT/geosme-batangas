@@ -22,16 +22,16 @@ export function LoginForm({
               </div>
             </a>
             <h1 className="text-xl font-bold mt-4">
-              Welcome,<span className="text-primary-500"> Admin</span>!
+              Welcome,<span className="text-primary-500"> User</span>!
             </h1>
           </div>
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Email</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Enter your email"
                 required
               />
             </div>
@@ -63,6 +63,12 @@ export function LoginForm({
               </svg>
               Continue with Google
             </Button>
+          </div>
+          <div className="text-muted-foreground text-center text-xs text-balance">
+            Don't have an account?{" "}
+            <a href="#" className="underline underline-offset-4">
+              Sign up
+            </a>
           </div>
         </div>
       </form>

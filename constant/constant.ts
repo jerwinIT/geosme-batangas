@@ -97,13 +97,13 @@ export const mobileNavLinks = [
   },
   {
     id: 8,
-    url: "/auth/login",
+    url: "/auth/main/login",
     label: "Login",
     icon: HiArrowRightOnRectangle,
   },
   {
     id: 9,
-    url: "/auth/signup",
+    url: "/auth/main/signup",
     label: "Sign Up",
     icon: HiUserPlus,
   },
