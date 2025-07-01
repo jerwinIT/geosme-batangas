@@ -98,7 +98,7 @@ export default function SmeManagementPage() {
       {/* Header section with title, description, and buttons */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text">
             SME Management
           </h1>
           <p className="text-sm text-muted-foreground">

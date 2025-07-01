@@ -98,7 +98,7 @@ export function PendingVerificationPage() {
       {/* Header section with title, description, and stats */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-text">
             Pending Verification
           </h1>
           <p className="text-sm text-muted-foreground">
