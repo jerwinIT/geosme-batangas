@@ -16,6 +16,8 @@ import {
   CreditCard,
 } from "lucide-react";
 import { dummyBusinesses } from "@/data/BusinessDataDummy";
+import { Business } from "@/types";
+import Pagination from "@/components/common/Pagination";
 
 const ITEMS_PER_PAGE = 12; // Increased for better UX
 
@@ -77,7 +79,7 @@ const BusinessFeed: React.FC = () => {
       const matchesPaymentMethod =
         selectedPaymentMethod === "all" ||
         business.paymentMethods.some(
-          (method) =>
+          (method: string) =>
             method.toLowerCase() === selectedPaymentMethod.toLowerCase()
         );
       return (
@@ -162,7 +164,7 @@ const BusinessFeed: React.FC = () => {
   return (
     <div className="pt-8 md:pt-12 relative overflow-visible">
       {/* Container with consistent width */}
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1440px] mx-auto px-2 sm:px-4">
         {/* Header Section */}
         <div className="mb-8">
           <div className="flex flex-col gap-6">
@@ -173,7 +175,10 @@ const BusinessFeed: React.FC = () => {
                   Discover Local{" "}
                   <span className="text-primary-500">Businesses</span>
                 </h2>
-                <p className="text-text-secondary mt-2 text-sm sm:text-base">
+                <p
+                  className="text-text-secondary mt-2 text-sm sm:text-base"
+                  aria-live="polite"
+                >
                   {!isLoading && (
                     <>
                       {filteredBusinesses.length === 0
@@ -197,12 +202,14 @@ const BusinessFeed: React.FC = () => {
               </div>
 
               {/* View Toggle */}
-              <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+              <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1 shadow-sm">
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className="h-9 px-4"
+                  className="h-9 px-4 focus-visible:ring-2 focus-visible:ring-primary-500"
+                  aria-label="Grid view"
+                  aria-pressed={viewMode === "grid"}
                 >
                   <Grid3X3 className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">Grid</span>
@@ -211,7 +218,9 @@ const BusinessFeed: React.FC = () => {
                   variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className="h-9 px-4"
+                  className="h-9 px-4 focus-visible:ring-2 focus-visible:ring-primary-500"
+                  aria-label="List view"
+                  aria-pressed={viewMode === "list"}
                 >
                   <List className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">List</span>
@@ -223,30 +232,33 @@ const BusinessFeed: React.FC = () => {
             <div className="flex flex-col gap-4">
               {/* Search Bar */}
               <div className="relative max-w-lg">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search businesses, locations, categories..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-300 bg-white shadow-sm"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-300 bg-white shadow-sm focus:shadow-md"
+                  aria-label="Search businesses"
                 />
               </div>
 
               {/* Filter Controls */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="flex flex-wrap gap-2 sm:gap-4">
                 {/* Category Filter */}
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Filter className="h-4 w-4 text-primary-500" />
-                    <span className="text-sm font-medium text-text">
-                      Category:
-                    </span>
-                  </div>
+                <div className="flex items-center gap-2 min-w-0">
+                  <Filter className="h-4 w-4 text-primary-500" />
+                  <label
+                    htmlFor="category-filter"
+                    className="text-sm font-medium text-text sr-only"
+                  >
+                    Category
+                  </label>
                   <select
+                    id="category-filter"
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-300 min-w-[140px]"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm min-w-[120px]"
                   >
                     {categories.map((category) => (
                       <option key={category} value={category}>
@@ -257,17 +269,19 @@ const BusinessFeed: React.FC = () => {
                 </div>
 
                 {/* Municipality Filter */}
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <MapPin className="h-4 w-4 text-primary-500" />
-                    <span className="text-sm font-medium text-text">
-                      Location:
-                    </span>
-                  </div>
+                <div className="flex items-center gap-2 min-w-0">
+                  <MapPin className="h-4 w-4 text-primary-500" />
+                  <label
+                    htmlFor="municipality-filter"
+                    className="text-sm font-medium text-text sr-only"
+                  >
+                    Location
+                  </label>
                   <select
+                    id="municipality-filter"
                     value={selectedMunicipality}
                     onChange={(e) => setSelectedMunicipality(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-300 min-w-[140px]"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm min-w-[120px]"
                   >
                     {municipalities.map((municipality) => (
                       <option key={municipality} value={municipality}>
@@ -280,17 +294,19 @@ const BusinessFeed: React.FC = () => {
                 </div>
 
                 {/* Payment Method Filter */}
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <CreditCard className="h-4 w-4 text-primary-500" />
-                    <span className="text-sm font-medium text-text">
-                      Payment:
-                    </span>
-                  </div>
+                <div className="flex items-center gap-2 min-w-0">
+                  <CreditCard className="h-4 w-4 text-primary-500" />
+                  <label
+                    htmlFor="payment-filter"
+                    className="text-sm font-medium text-text sr-only"
+                  >
+                    Payment
+                  </label>
                   <select
+                    id="payment-filter"
                     value={selectedPaymentMethod}
                     onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-300 min-w-[140px]"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm min-w-[120px]"
                   >
                     {paymentMethods.map((method) => (
                       <option key={method} value={method}>
@@ -301,15 +317,19 @@ const BusinessFeed: React.FC = () => {
                 </div>
 
                 {/* Sort Filter */}
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <SlidersHorizontal className="h-4 w-4 text-primary-500" />
-                    <span className="text-sm font-medium text-text">Sort:</span>
-                  </div>
+                <div className="flex items-center gap-2 min-w-0">
+                  <SlidersHorizontal className="h-4 w-4 text-primary-500" />
+                  <label
+                    htmlFor="sort-filter"
+                    className="text-sm font-medium text-text sr-only"
+                  >
+                    Sort
+                  </label>
                   <select
+                    id="sort-filter"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-300 min-w-[120px]"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm min-w-[100px]"
                   >
                     <option value="name">Name A-Z</option>
                     <option value="rating">Highest Rated</option>
@@ -332,7 +352,7 @@ const BusinessFeed: React.FC = () => {
                       setSelectedPaymentMethod("all");
                       setSortBy("name");
                     }}
-                    className="whitespace-nowrap text-sm hover:bg-primary-50 hover:border-primary-300"
+                    className="whitespace-nowrap text-sm hover:bg-primary-50 hover:border-primary-300 focus-visible:ring-2 focus-visible:ring-primary-500"
                   >
                     Clear All Filters
                   </Button>
@@ -412,139 +432,16 @@ const BusinessFeed: React.FC = () => {
         </div>
 
         {/* Pagination Controls */}
-        {!isLoading && filteredBusinesses.length > 0 && totalPages > 1 && (
-          <div className="flex flex-col items-center gap-6 py-8 border-t border-gray-200">
-            {/* Page Info */}
-            <div className="text-sm text-text-secondary">
-              {isPaginationLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
-                  Loading...
-                </div>
-              ) : (
-                `Showing ${startIndex + 1}-${Math.min(
-                  endIndex,
-                  filteredBusinesses.length
-                )} of ${filteredBusinesses.length} businesses`
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              {/* Previous Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1 || isPaginationLoading}
-                className="flex items-center gap-2 h-10 px-4"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Previous</span>
-              </Button>
-
-              {/* Page Numbers */}
-              <div className="flex items-center gap-1">
-                {/* First page */}
-                {currentPage > 3 && (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handlePageChange(1)}
-                      disabled={isPaginationLoading}
-                      className="h-10 w-10"
-                    >
-                      1
-                    </Button>
-                    {currentPage > 4 && (
-                      <span className="px-2 text-text-secondary">...</span>
-                    )}
-                  </>
-                )}
-
-                {/* Visible page numbers */}
-                {Array.from({ length: totalPages }).map((_, index) => {
-                  const pageNumber = index + 1;
-                  const isVisible =
-                    pageNumber === currentPage ||
-                    pageNumber === currentPage - 1 ||
-                    pageNumber === currentPage + 1 ||
-                    (currentPage <= 2 && pageNumber <= 3) ||
-                    (currentPage >= totalPages - 1 &&
-                      pageNumber >= totalPages - 2);
-
-                  if (!isVisible) return null;
-
-                  return (
-                    <Button
-                      key={pageNumber}
-                      variant={currentPage === pageNumber ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => handlePageChange(pageNumber)}
-                      disabled={isPaginationLoading}
-                      className={`h-10 w-10 ${
-                        currentPage === pageNumber
-                          ? "bg-primary-500 text-white hover:bg-primary-600"
-                          : "hover:bg-primary-500/10"
-                      }`}
-                    >
-                      {pageNumber}
-                    </Button>
-                  );
-                })}
-
-                {/* Last page */}
-                {currentPage < totalPages - 2 && (
-                  <>
-                    {currentPage < totalPages - 3 && (
-                      <span className="px-2 text-text-secondary">...</span>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handlePageChange(totalPages)}
-                      disabled={isPaginationLoading}
-                      className="h-10 w-10"
-                    >
-                      {totalPages}
-                    </Button>
-                  </>
-                )}
-              </div>
-
-              {/* Next Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages || isPaginationLoading}
-                className="flex items-center gap-2 h-10 px-4"
-              >
-                <span className="hidden sm:inline">Next</span>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* Quick Jump (for large datasets) */}
-            {totalPages > 5 && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-text-secondary">Jump to page:</span>
-                <select
-                  value={currentPage}
-                  onChange={(e) => handlePageChange(Number(e.target.value))}
-                  disabled={isPaginationLoading}
-                  className="px-3 py-1 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <option key={index + 1} value={index + 1}>
-                      {index + 1}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          isLoading={isLoading}
+          isPaginationLoading={isPaginationLoading}
+          startIndex={startIndex}
+          endIndex={endIndex}
+          totalItems={filteredBusinesses.length}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ export default function SMEPage() {
 
         {/* Business Categories Section */}
         <section className="mb-12">
-          <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full max-w-[1440px] mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-text mb-6">
               Browse by <span className="text-primary-500">Category</span>
             </h2>

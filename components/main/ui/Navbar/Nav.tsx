@@ -119,28 +119,94 @@ export default function Nav({ openNav }: NavProps) {
                 )}
 
                 {/* Dropdown menu */}
+
                 {links.dropdownItems && (
                   <div
-                    className={`absolute top-full left-1/2 -translate-x-1/2 pt-2 transition-all duration-200 ${
+                    className={`absolute top-full left-1/2 -translate-x-1/2 pt-4 transition-all duration-300 ease-out z-50 ${
                       activeDropdown === links.label
-                        ? "opacity-100 visible translate-y-0"
-                        : "opacity-0 invisible translate-y-2"
+                        ? "opacity-100 visible translate-y-0 scale-100"
+                        : "opacity-0 invisible translate-y-4 scale-95"
                     }`}
                   >
-                    <div className="relative bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden min-w-[200px]">
-                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-l border-t border-gray-100 rotate-45"></div>
-                      <div className="relative bg-white py-2">
-                        {links.dropdownItems.map((item) => (
+                    <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden min-w-[280px] p-3">
+                      {/* Arrow pointer */}
+                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 shadow-lg border border-gray-100"></div>
+
+                      {/* Card grid */}
+                      <div className="grid gap-2">
+                        {links.dropdownItems.map((item, index) => (
                           <Link
                             key={item.id}
                             href={item.url}
-                            className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors duration-200 ${
+                            className={`group relative overflow-hidden rounded-xl transition-all duration-300 ease-out transform hover:scale-[1.02] hover:-translate-y-1 ${
                               isActiveLink(item.url)
-                                ? "text-[#d72323] font-medium bg-[#d72323]/5"
-                                : "text-gray-700"
+                                ? "bg-gradient-to-br from-[#d72323]/10 to-[#d72323]/5 border-2 border-[#d72323]/20 shadow-lg"
+                                : "bg-white/80 backdrop-blur-sm border border-gray-200/50 hover:bg-white hover:border-gray-300/50 hover:shadow-xl"
                             }`}
+                            style={{
+                              animationDelay: `${index * 100}ms`,
+                            }}
                           >
-                            {item.label}
+                            {/* Card content */}
+                            <div className="relative p-4">
+                              {/* Background pattern for active card */}
+                              {isActiveLink(item.url) && (
+                                <div className="absolute inset-0 opacity-5">
+                                  <div className="absolute top-2 right-2 w-8 h-8 bg-[#d72323] rounded-full"></div>
+                                  <div className="absolute bottom-2 left-2 w-4 h-4 bg-[#d72323] rounded-full"></div>
+                                </div>
+                              )}
+
+                              {/* Hover shimmer effect */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
+
+                              <div className="relative flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  <div>
+                                    <h4
+                                      className={`font-semibold text-sm transition-colors duration-200 ${
+                                        isActiveLink(item.url)
+                                          ? "text-[#d72323]"
+                                          : "text-gray-800 group-hover:text-gray-900"
+                                      }`}
+                                    >
+                                      {item.label}
+                                    </h4>
+
+                                    {/* Optional subtitle/description */}
+                                    <p className="text-xs text-gray-500 mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                                      Navigate to {item.label.toLowerCase()}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Arrow icon */}
+                                <div
+                                  className={`flex-shrink-0 transition-all duration-200 ${
+                                    isActiveLink(item.url)
+                                      ? "text-[#d72323] scale-110"
+                                      : "text-gray-400 group-hover:text-[#d72323] group-hover:scale-110 group-hover:translate-x-1"
+                                  }`}
+                                >
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M9 5l7 7-7 7"
+                                    />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Card shadow overlay */}
+                            <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/5 pointer-events-none"></div>
                           </Link>
                         ))}
                       </div>

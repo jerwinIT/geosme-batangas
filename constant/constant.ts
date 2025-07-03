@@ -34,14 +34,24 @@ export const navLinks = [
     label: "Insights",
     dropdownItems: [
       {
-        id: "explore",
-        label: "Explore SME",
-        url: "/explore",
+        id: "4.1",
+        label: "Business Density",
+        url: "/insights/business-density",
       },
       {
-        id: "fintech",
-        label: "View Fintech SME",
-        url: "/fintech-insights",
+        id: "4.2",
+        label: "Market Trends",
+        url: "/insights/market-trends",
+      },
+      {
+        id: "4.3",
+        label: "Municipality Comparison",
+        url: "/insights/municipality-comparison",
+      },
+      {
+        id: "4.4",
+        label: "Competitor Analysis",
+        url: "/insights/competitor-analysis",
       },
     ],
   },

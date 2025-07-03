@@ -3,8 +3,8 @@ description:
 globs: 
 alwaysApply: false
 ---
-Create a admin dashboard for this web application. The admin handles all system environment configuration and also are responsible for SMEs data in Batangas.
+GeoSME Batangas is a web application that uses map technology to serve as a directory for SMEs (Small and Medium Enterprises). Regular users can search, bookmark, navigate via Google Maps links, and leave comments and ratings—similar to Google Maps, but focused specifically on SMEs in Batangas.
 
-Context:
+The web application also provides location-based analytics, allowing users to access insights from the SME dataset in Batangas, such as market trends.
 
-GeoSME Batangas is a web application that uses map technology to serve as SME directories. Regular users can search, bookmark, navigate, leave comments and ratings to SMEs like Google Map but SMEs Batangas focus. This web application also provide location-based analytics where users can gain SME analytics through data that we will provide. Analytics like, market trends, business density heatmaps (showing less or high saturated business on specific municipality or area) showing market opportunities with customer high foot traffic (except demographics). Then we also provide Business Portal, a domain for SME owners who are listed and registered to our application, they can gain business performance metrics like how many users navigate to their business, review ratings and comments, and competitor analysis. 
+Additionally, it is integrated with GIS (Geographic Information System) technology to generate business density heatmaps. These heatmaps help users visualize the distribution of SME types—such as restaurants, agricultural businesses, etc.—across different municipalities. This reveals potential market opportunities based on areas with high foot traffic, though demographic data is not included.

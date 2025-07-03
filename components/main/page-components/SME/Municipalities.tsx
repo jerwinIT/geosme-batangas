@@ -146,8 +146,8 @@ export default function Municipalities() {
   };
 
   return (
-    <section className="w-full min-h-[calc(100vh-5rem)] flex flex-col justify-center items-center">
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="w-full min-h-[calc(80vh-5rem)] flex flex-col justify-center items-center">
+      <div className="w-full max-w-[1440px] mx-auto ">
         <h2 className="text-2xl sm:text-3xl font-bold text-text mb-6">
           Browse by <span className="text-primary-500">Municipality</span>
         </h2>
