@@ -1,0 +1,22 @@
+Market Trends
+Purpose: Track changes in SME activity over time.
+
+Page Content:
+
+Line/bar charts:
+
+Monthly/Quarterly new SME registrations
+
+Popular categories over time
+
+Dropdown filters:
+
+Date range
+
+Category
+
+Key insights:
+
+"Food & Beverage SMEs have grown 25% in the last year"
+
+"Agri-business trends peaked in Q2"

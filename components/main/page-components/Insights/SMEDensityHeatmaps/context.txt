@@ -1,0 +1,22 @@
+Business Density Heatmaps
+Purpose: Visualize the concentration of SMEs by type and area.
+
+Page Content:
+
+Interactive map with heatmap overlay.
+
+Filter dropdowns:
+
+SME Category (e.g., Café, Retail, Agri-business)
+
+Municipality
+
+Legend for density levels (e.g., light = low, dark = high).
+
+Insights box:
+
+"Most dense areas: Lipa City, Batangas City"
+
+"Low presence: Nasugbu, San Juan"
+
+Use Placeholder of the Map container first. (I will be using google maps)

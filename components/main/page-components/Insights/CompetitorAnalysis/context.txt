@@ -1,0 +1,12 @@
+Competitor Analysis
+What you need: SME latitude, longitude, and category
+
+How: Use Haversine formula or a GIS query to find SMEs of the same category within a user-specified radius from a selected SME.
+
+Process:
+
+When an SME is selected, input radius (e.g., 1km)
+
+Filter other SMEs of the same category by distance
+
+Show results on map and list
