@@ -207,15 +207,15 @@ export default function CompetitorAnalysis() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pt-20">
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Enhanced Header */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+          <div className="inline-flex items-center gap-2 bg-primary-100 text-primary-500 px-4 py-2 rounded-full text-sm font-medium">
             <Target className="h-4 w-4" />
             Business Intelligence Tool
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold text-primary-500">
             Competitor Analysis
           </h1>
           <p className="text-gray-600 max-w-3xl mx-auto text-lg leading-relaxed">
