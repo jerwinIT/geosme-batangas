@@ -2,22 +2,22 @@
 
 import { useState, useMemo } from "react";
 import { Button } from "@/components/common/button";
-import {
-  Clock,
-  CheckCircle2,
-  CircleX,
-  Filter,
-  Eye,
-  FileText,
-  Download,
-  ArrowLeft,
-} from "lucide-react";
+import { Clock, Filter, ArrowLeft } from "lucide-react";
 import { SMETable } from "@/components/admin/ui/SMETable";
 import { DocumentViewer } from "@/components/admin/ui/DocumentViewer";
 import { SearchBar } from "@/components/common";
 import { Business, SMEFilter } from "@/types";
 import { dummyBusinesses } from "@/data/BusinessDataDummy";
 import Link from "next/link";
+
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export function PendingVerificationPage() {
   const [businesses, setBusinesses] = useState<Business[]>(
@@ -33,6 +33,12 @@ export function PendingVerificationPage() {
     null
   );
   const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPaginationLoading, setIsPaginationLoading] = useState(false);
+  const itemsPerPage = 10;
 
   const handleStatusChange = (id: string, status: Business["status"]) => {
     setBusinesses((prev) =>
@@ -64,6 +70,8 @@ export function PendingVerificationPage() {
 
   const handleFiltersChange = (newFilters: SMEFilter) => {
     setFilters(newFilters);
+    // Reset to first page when filters change
+    setCurrentPage(1);
   };
 
   const handleApprove = (businessId: string) => {
@@ -82,6 +90,47 @@ export function PendingVerificationPage() {
     console.log("Download all documents for:", businessId);
   };
 
+  // Pagination logic
+  const filteredBusinesses = useMemo(() => {
+    return businesses.filter((business) => {
+      const matchesSearch =
+        !filters.search ||
+        business.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+        business.ownerName
+          ?.toLowerCase()
+          .includes(filters.search.toLowerCase()) ||
+        business.email?.toLowerCase().includes(filters.search.toLowerCase());
+
+      const matchesStatus =
+        !filters.status ||
+        filters.status === "all" ||
+        business.status === filters.status;
+      const matchesMunicipality =
+        !filters.municipality || business.municipality === filters.municipality;
+      const matchesCategory =
+        !filters.category || business.category === filters.category;
+
+      return (
+        matchesSearch && matchesStatus && matchesMunicipality && matchesCategory
+      );
+    });
+  }, [businesses, filters]);
+
+  const totalItems = filteredBusinesses.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedBusinesses = filteredBusinesses.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setIsPaginationLoading(true);
+    setCurrentPage(page);
+    // Simulate loading delay
+    setTimeout(() => {
+      setIsPaginationLoading(false);
+    }, 300);
+  };
+
   const pendingCount = businesses.length;
 
   return (
@@ -93,6 +142,21 @@ export function PendingVerificationPage() {
             Back to SME Management
           </Button>
         </Link>
+      </div>
+
+      {/* Breadcrumbs */}
+      <div className="mb-6">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/admin/sme">SME Management</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Pending Verification</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
 
       {/* Header section with title, description, and stats */}
@@ -133,7 +197,7 @@ export function PendingVerificationPage() {
 
       {/* SME Table with document verification actions */}
       <SMETable
-        businesses={businesses}
+        businesses={paginatedBusinesses}
         onStatusChange={handleStatusChange}
         onView={handleView}
         onEdit={handleEdit}
@@ -143,6 +207,17 @@ export function PendingVerificationPage() {
         showDocumentActions={true}
         onViewDocuments={handleViewDocuments}
         onDownloadDocuments={handleDownloadDocuments}
+        // Pagination props
+        currentPage={currentPage}
+        totalPages={totalPages}
+        isLoading={isLoading}
+        isPaginationLoading={isPaginationLoading}
+        startIndex={startIndex}
+        endIndex={endIndex}
+        totalItems={totalItems}
+        onPageChange={handlePageChange}
+        // Original businesses for filter options
+        allBusinesses={businesses}
       />
 
       {/* Document Viewer */}

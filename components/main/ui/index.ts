@@ -10,3 +10,6 @@ export { default as Badge } from "./badge";
 //Export Home components
 export { default as ResponsiveNavbar } from "./Navbar/ResponsiveNav";
 export { default as Footer } from "./Footer";
+
+// Auth components
+export { SignOutButton } from "./SignOutButton";

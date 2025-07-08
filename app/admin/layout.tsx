@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/admin/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/main/ui";
 import { Toaster } from "sonner";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 import "../globals.css";
 
 const font = Poppins({
@@ -28,14 +29,16 @@ export default function AdminLayout({
         className={`${font.className} antialiased bg-light-gray`}
         suppressHydrationWarning
       >
-        <ThemeProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset className="bg-light-gray">{children}</SidebarInset>
-          </SidebarProvider>
-          <ThemeToggle />
-          <Toaster position="top-right" richColors />
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset className="bg-light-gray">{children}</SidebarInset>
+            </SidebarProvider>
+            <ThemeToggle />
+            <Toaster position="top-right" richColors />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

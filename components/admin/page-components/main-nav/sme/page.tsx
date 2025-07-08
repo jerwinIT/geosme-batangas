@@ -8,7 +8,6 @@ import {
   SearchCheck,
   CheckCircle2,
   CircleX,
-  Filter,
   Upload,
   Import,
 } from "lucide-react";
@@ -26,6 +25,12 @@ export default function SmeManagementPage() {
     category: "",
     search: "",
   });
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPaginationLoading, setIsPaginationLoading] = useState(false);
+  const itemsPerPage = 10;
 
   // Calculate stats based on current data
   const stats: SMEStats = useMemo(() => {
@@ -76,6 +81,8 @@ export default function SmeManagementPage() {
 
   const handleFiltersChange = (newFilters: SMEFilter) => {
     setFilters(newFilters);
+    // Reset to first page when filters change
+    setCurrentPage(1);
   };
 
   const handleAddSME = () => {
@@ -91,6 +98,47 @@ export default function SmeManagementPage() {
   const handleExport = () => {
     // Handle export logic here
     console.log("Export SMEs");
+  };
+
+  // Pagination logic
+  const filteredBusinesses = useMemo(() => {
+    return businesses.filter((business) => {
+      const matchesSearch =
+        !filters.search ||
+        business.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+        business.ownerName
+          ?.toLowerCase()
+          .includes(filters.search.toLowerCase()) ||
+        business.email?.toLowerCase().includes(filters.search.toLowerCase());
+
+      const matchesStatus =
+        !filters.status ||
+        filters.status === "all" ||
+        business.status === filters.status;
+      const matchesMunicipality =
+        !filters.municipality || business.municipality === filters.municipality;
+      const matchesCategory =
+        !filters.category || business.category === filters.category;
+
+      return (
+        matchesSearch && matchesStatus && matchesMunicipality && matchesCategory
+      );
+    });
+  }, [businesses, filters]);
+
+  const totalItems = filteredBusinesses.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedBusinesses = filteredBusinesses.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setIsPaginationLoading(true);
+    setCurrentPage(page);
+    // Simulate loading delay
+    setTimeout(() => {
+      setIsPaginationLoading(false);
+    }, 300);
   };
 
   return (
@@ -163,13 +211,24 @@ export default function SmeManagementPage() {
 
       {/* SME Table */}
       <SMETable
-        businesses={businesses}
+        businesses={paginatedBusinesses}
         onStatusChange={handleStatusChange}
         onEdit={handleEdit}
         onView={handleView}
         onDelete={handleDelete}
         filters={filters}
         onFiltersChange={handleFiltersChange}
+        // Pagination props
+        currentPage={currentPage}
+        totalPages={totalPages}
+        isLoading={isLoading}
+        isPaginationLoading={isPaginationLoading}
+        startIndex={startIndex}
+        endIndex={endIndex}
+        totalItems={totalItems}
+        onPageChange={handlePageChange}
+        // Original businesses for filter options
+        allBusinesses={businesses}
       />
     </div>
   );

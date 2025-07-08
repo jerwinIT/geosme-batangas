@@ -6,6 +6,7 @@ import {
   ThemeProvider,
   ThemeToggle,
 } from "@/components/main/ui";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 import "../globals.css";
 
@@ -30,19 +31,21 @@ export default function RootLayout({
         className={`${font.className} antialiased bg-light-gray`}
         suppressHydrationWarning
       >
-        <ThemeProvider>
-          {/* Navigation */}
-          <ResponsiveNavbar />
-          {/* Main Content */}
+        <SessionProvider>
+          <ThemeProvider>
+            {/* Navigation */}
+            <ResponsiveNavbar />
+            {/* Main Content */}
 
-          {/* Main Content */}
-          {children}
+            {/* Main Content */}
+            {children}
 
-          {/* Footer */}
-          <Footer />
-          {/* Theme Toggle */}
-          <ThemeToggle />
-        </ThemeProvider>
+            {/* Footer */}
+            <Footer />
+            {/* Theme Toggle */}
+            <ThemeToggle />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

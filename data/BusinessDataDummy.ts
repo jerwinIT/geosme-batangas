@@ -54,8 +54,7 @@ export const dummyBusinesses: Business[] = [
   {
     id: "3",
     name: "Green Thumb Garden Center",
-    imageUrl:
-      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&auto=format&fit=crop&q=60",
+    imageUrl: "",
     rating: 4.2,
     municipality: "Lemery",
     category: "Gardening",
@@ -227,8 +226,7 @@ export const dummyBusinesses: Business[] = [
   {
     id: "10",
     name: "Auto Repair Express",
-    imageUrl:
-      "https://images.unsplash.com/photo-1486754735734-398d1d6d0c47?w=800&auto=format&fit=crop&q=60",
+    imageUrl: "",
     rating: 4.5,
     municipality: "Santo Tomas",
     category: "Automotive",

@@ -1,15 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Button } from "@/components/common/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,19 +23,14 @@ import {
   XCircle,
   Clock,
   Search,
-  Filter,
-  Download,
-  Upload,
   Star,
   MapPin,
-  Phone,
-  Mail,
-  Globe,
-  Calendar,
   FileText,
+  Download,
 } from "lucide-react";
 import { Business, SMEFilter } from "@/types";
 import { cn } from "@/lib/utils";
+import Pagination from "@/components/common/Pagination";
 
 interface SMETableProps {
   businesses: Business[];
@@ -55,6 +43,17 @@ interface SMETableProps {
   showDocumentActions?: boolean;
   onViewDocuments?: (business: Business) => void;
   onDownloadDocuments?: (business: Business) => void;
+  // Pagination props
+  currentPage?: number;
+  totalPages?: number;
+  isLoading?: boolean;
+  isPaginationLoading?: boolean;
+  startIndex?: number;
+  endIndex?: number;
+  totalItems?: number;
+  onPageChange?: (page: number) => void;
+  // Original businesses for filter options
+  allBusinesses?: Business[];
 }
 
 export function SMETable({
@@ -68,6 +67,17 @@ export function SMETable({
   showDocumentActions,
   onViewDocuments,
   onDownloadDocuments,
+  // Pagination props
+  currentPage = 1,
+  totalPages = 1,
+  isLoading = false,
+  isPaginationLoading = false,
+  startIndex = 0,
+  endIndex = 0,
+  totalItems = 0,
+  onPageChange,
+  // Original businesses for filter options
+  allBusinesses = businesses,
 }: SMETableProps) {
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(
     null
@@ -75,30 +85,8 @@ export function SMETable({
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const filteredBusinesses = useMemo(() => {
-    return businesses.filter((business) => {
-      const matchesSearch =
-        !filters.search ||
-        business.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        business.ownerName
-          ?.toLowerCase()
-          .includes(filters.search.toLowerCase()) ||
-        business.email?.toLowerCase().includes(filters.search.toLowerCase());
-
-      const matchesStatus =
-        !filters.status ||
-        filters.status === "all" ||
-        business.status === filters.status;
-      const matchesMunicipality =
-        !filters.municipality || business.municipality === filters.municipality;
-      const matchesCategory =
-        !filters.category || business.category === filters.category;
-
-      return (
-        matchesSearch && matchesStatus && matchesMunicipality && matchesCategory
-      );
-    });
-  }, [businesses, filters]);
+  // Use the businesses prop directly since filtering is now handled by parent components
+  const displayBusinesses = businesses;
 
   const getStatusBadge = (status: Business["status"]) => {
     const baseClasses =
@@ -211,7 +199,10 @@ export function SMETable({
             id="status"
             value={filters.status || "all"}
             onChange={(e) =>
-              onFiltersChange({ ...filters, status: e.target.value as any })
+              onFiltersChange({
+                ...filters,
+                status: e.target.value as Business["status"],
+              })
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -239,7 +230,7 @@ export function SMETable({
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Municipalities</option>
-            {Array.from(new Set(businesses.map((b) => b.municipality))).map(
+            {Array.from(new Set(allBusinesses.map((b) => b.municipality))).map(
               (municipality) => (
                 <option key={municipality} value={municipality}>
                   {municipality}
@@ -262,7 +253,7 @@ export function SMETable({
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Categories</option>
-            {Array.from(new Set(businesses.map((b) => b.category))).map(
+            {Array.from(new Set(allBusinesses.map((b) => b.category))).map(
               (category) => (
                 <option key={category} value={category}>
                   {category}
@@ -306,7 +297,7 @@ export function SMETable({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredBusinesses.map((business) => (
+              {displayBusinesses.map((business) => (
                 <tr key={business.id} className="hover:bg-gray-50">
                   <td className="px-4 py-4">
                     <div className="flex items-center space-x-3">
@@ -711,6 +702,20 @@ export function SMETable({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Pagination */}
+      {onPageChange && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          isLoading={isLoading}
+          isPaginationLoading={isPaginationLoading}
+          startIndex={startIndex}
+          endIndex={endIndex}
+          totalItems={totalItems}
+          onPageChange={onPageChange}
+        />
       )}
     </div>
   );
