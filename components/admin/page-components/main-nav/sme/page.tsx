@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import DashboardWidget from "@/components/admin/ui/DashboardWidget";
 import { SMETable } from "@/components/admin/ui/SMETable";
+import { AddSMEForm } from "@/components/admin/ui/AddSMEForm";
 import { Business, SMEFilter, SMEStats } from "@/types";
 import { dummyBusinesses } from "@/data/BusinessDataDummy";
 import Link from "next/link";
@@ -31,6 +32,9 @@ export default function SmeManagementPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPaginationLoading, setIsPaginationLoading] = useState(false);
   const itemsPerPage = 10;
+
+  // Add SME form state
+  const [isAddSMEFormOpen, setIsAddSMEFormOpen] = useState(false);
 
   // Calculate stats based on current data
   const stats: SMEStats = useMemo(() => {
@@ -86,18 +90,41 @@ export default function SmeManagementPage() {
   };
 
   const handleAddSME = () => {
-    // Handle add SME logic here
-    console.log("Add new SME");
+    setIsAddSMEFormOpen(true);
+  };
+
+  const handleAddSMESubmit = (smeData: any) => {
+    // Handle adding single SME
+    const newSME: Business = {
+      id: `sme-${Date.now()}`, // Generate temporary ID
+      ...smeData,
+      rating: 0,
+      imageUrl: "",
+      registrationDate: new Date().toISOString(),
+      coordinates:
+        smeData.coordinates?.latitude && smeData.coordinates?.longitude
+          ? smeData.coordinates
+          : undefined, // Leave undefined for automatic geocoding later
+    };
+    setBusinesses((prev) => [...prev, newSME]);
+    console.log("Added new SME:", newSME);
+  };
+
+  const handleImportCSV = (file: File) => {
+    // Handle CSV import logic here
+    console.log("Importing CSV file:", file.name);
+    // TODO: Implement CSV parsing and import logic
+  };
+
+  const handleExport = () => {
+    // Handle export logic here
+    console.log("Exporting SMEs");
+    // TODO: Implement export functionality
   };
 
   const handleImport = () => {
     // Handle import logic here
     console.log("Import SMEs");
-  };
-
-  const handleExport = () => {
-    // Handle export logic here
-    console.log("Export SMEs");
   };
 
   // Pagination logic
@@ -199,16 +226,6 @@ export default function SmeManagementPage() {
         </div>
       </div>
 
-      {/* Import/Export section */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4 mb-4">
-        <Button variant="outline" icon={Import} onClick={handleImport}>
-          Import
-        </Button>
-        <Button variant="outline" icon={Upload} onClick={handleExport}>
-          Export
-        </Button>
-      </div>
-
       {/* SME Table */}
       <SMETable
         businesses={paginatedBusinesses}
@@ -218,6 +235,7 @@ export default function SmeManagementPage() {
         onDelete={handleDelete}
         filters={filters}
         onFiltersChange={handleFiltersChange}
+        onExport={handleExport}
         // Pagination props
         currentPage={currentPage}
         totalPages={totalPages}
@@ -229,6 +247,14 @@ export default function SmeManagementPage() {
         onPageChange={handlePageChange}
         // Original businesses for filter options
         allBusinesses={businesses}
+      />
+
+      {/* Add SME Form */}
+      <AddSMEForm
+        isOpen={isAddSMEFormOpen}
+        onClose={() => setIsAddSMEFormOpen(false)}
+        onAddSME={handleAddSMESubmit}
+        onImportCSV={handleImportCSV}
       />
     </div>
   );

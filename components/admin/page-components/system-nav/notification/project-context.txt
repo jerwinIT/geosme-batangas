@@ -1,0 +1,5 @@
+GeoSME Batangas is a web application that uses map technology to serve as a directory for SMEs (Small and Medium Enterprises). Regular users can search, bookmark, navigate via Google Maps links, and leave comments and ratings—similar to Google Maps, but focused specifically on SMEs in Batangas.
+
+The web application also provides location-based analytics, allowing users to access insights from the SME dataset in Batangas, such as market trends.
+
+Additionally, it is integrated with GIS (Geographic Information System) technology to generate business density heatmaps. These heatmaps help users visualize the distribution of SME types—such as restaurants, agricultural businesses, etc.—across different municipalities. This reveals potential market opportunities based on areas with high foot traffic, though demographic data is not included.

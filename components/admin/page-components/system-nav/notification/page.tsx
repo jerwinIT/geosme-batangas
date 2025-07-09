@@ -4,13 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/common/button";
 import { Search } from "lucide-react";
 import DashboardWidget from "@/components/admin/ui/DashboardWidget";
-import { NotificationSettings } from "./notification-settings";
 import {
   Bell,
   AlertTriangle,
-  CheckCircle2,
   Clock,
-  Filter,
   Trash2,
   Eye,
   EyeOff,

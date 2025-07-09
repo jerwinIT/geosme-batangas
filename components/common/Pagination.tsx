@@ -11,6 +11,7 @@ interface PaginationProps {
   endIndex: number;
   totalItems: number;
   onPageChange: (page: number) => void;
+  itemType?: string; // Optional prop to customize the item type text
 }
 
 function Pagination({
@@ -22,6 +23,7 @@ function Pagination({
   endIndex,
   totalItems,
   onPageChange,
+  itemType = "items",
 }: PaginationProps) {
   if (isLoading || totalItems === 0 || totalPages <= 1) return null;
 
@@ -38,7 +40,7 @@ function Pagination({
           `Showing ${startIndex + 1}-${Math.min(
             endIndex,
             totalItems
-          )} of ${totalItems} businesses`
+          )} of ${totalItems} ${itemType}`
         )}
       </div>
 

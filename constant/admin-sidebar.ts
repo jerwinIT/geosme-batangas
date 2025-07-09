@@ -53,11 +53,6 @@ export const adminSidebarLinks = {
       url: "/admin/map",
       icon: MapPin,
     },
-    {
-      title: "Reports ",
-      url: "/admin/reports",
-      icon: FileText,
-    },
   ],
   system: [
     {

@@ -49,9 +49,11 @@ import {
   UserX,
   Lock,
   Unlock,
+  Upload,
 } from "lucide-react";
 import { User as UserType, UserFilter } from "@/types";
 import { cn } from "@/lib/utils";
+import Pagination from "@/components/common/Pagination";
 
 interface UserTableProps {
   users: UserType[];
@@ -64,6 +66,18 @@ interface UserTableProps {
   onActivate: (id: string) => void;
   filters: UserFilter;
   onFiltersChange: (filters: UserFilter) => void;
+  onExport: () => void;
+  // Pagination props
+  currentPage?: number;
+  totalPages?: number;
+  isLoading?: boolean;
+  isPaginationLoading?: boolean;
+  startIndex?: number;
+  endIndex?: number;
+  totalItems?: number;
+  onPageChange?: (page: number) => void;
+  // Original users for filter options
+  allUsers?: UserType[];
 }
 
 export function UserTable({
@@ -77,6 +91,18 @@ export function UserTable({
   onActivate,
   filters,
   onFiltersChange,
+  onExport,
+  // Pagination props
+  currentPage = 1,
+  totalPages = 1,
+  isLoading = false,
+  isPaginationLoading = false,
+  startIndex = 0,
+  endIndex = 0,
+  totalItems = 0,
+  onPageChange,
+  // Original users for filter options
+  allUsers = users,
 }: UserTableProps) {
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -329,13 +355,24 @@ export function UserTable({
           >
             <option value="">All Municipalities</option>
             {Array.from(
-              new Set(users.map((u) => u.municipality).filter(Boolean))
+              new Set(allUsers.map((u) => u.municipality).filter(Boolean))
             ).map((municipality) => (
               <option key={municipality} value={municipality}>
                 {municipality}
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="flex items-end">
+          <Button
+            variant="outline"
+            icon={Upload}
+            onClick={onExport}
+            className="h-10"
+          >
+            Export
+          </Button>
         </div>
       </div>
 
@@ -587,6 +624,21 @@ export function UserTable({
             </div>
           </DialogContent>
         </Dialog>
+      )}
+
+      {/* Pagination */}
+      {onPageChange && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          isLoading={isLoading}
+          isPaginationLoading={isPaginationLoading}
+          startIndex={startIndex}
+          endIndex={endIndex}
+          totalItems={totalItems}
+          onPageChange={onPageChange}
+          itemType="users"
+        />
       )}
     </div>
   );

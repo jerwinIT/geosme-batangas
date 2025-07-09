@@ -2,13 +2,29 @@
 
 import { useState, useMemo } from "react";
 import { Button } from "@/components/common/button";
-import { Clock, Filter, ArrowLeft } from "lucide-react";
+import {
+  Clock,
+  Filter,
+  ArrowLeft,
+  Eye,
+  CheckCircle,
+  XCircle,
+  FileText,
+  Download,
+  Building,
+  User,
+  MapPin,
+  Phone,
+  Mail,
+} from "lucide-react";
 import { SMETable } from "@/components/admin/ui/SMETable";
 import { DocumentViewer } from "@/components/admin/ui/DocumentViewer";
 import { SearchBar } from "@/components/common";
 import { Business, SMEFilter } from "@/types";
 import { dummyBusinesses } from "@/data/BusinessDataDummy";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 import {
   Breadcrumb,
@@ -33,6 +49,7 @@ export function PendingVerificationPage() {
     null
   );
   const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
+  const [expandedBusiness, setExpandedBusiness] = useState<string | null>(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,12 +57,72 @@ export function PendingVerificationPage() {
   const [isPaginationLoading, setIsPaginationLoading] = useState(false);
   const itemsPerPage = 10;
 
+  // Mock documents for each business
+  const getBusinessDocuments = (businessId: string) => [
+    {
+      name: "Business Registration Certificate",
+      type: "PDF",
+      size: "2.3 MB",
+      uploaded: "2024-01-15",
+      status: "verified",
+    },
+    {
+      name: "Mayor's Permit",
+      type: "PDF",
+      size: "1.8 MB",
+      uploaded: "2024-01-15",
+      status: "pending",
+    },
+    {
+      name: "DTI Certificate",
+      type: "PDF",
+      size: "3.1 MB",
+      uploaded: "2024-01-15",
+      status: "verified",
+    },
+    {
+      name: "Barangay Clearance",
+      type: "PDF",
+      size: "1.2 MB",
+      uploaded: "2024-01-15",
+      status: "pending",
+    },
+  ];
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "verified":
+        return (
+          <Badge variant="default" className="bg-green-100 text-green-800">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            Verified
+          </Badge>
+        );
+      case "pending":
+        return (
+          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+            <Clock className="w-3 h-3 mr-1" />
+            Pending
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="secondary" className="bg-red-100 text-red-800">
+            <XCircle className="w-3 h-3 mr-1" />
+            Rejected
+          </Badge>
+        );
+    }
+  };
+
   const handleStatusChange = (id: string, status: Business["status"]) => {
     setBusinesses((prev) =>
       prev.map((business) =>
         business.id === id ? { ...business, status } : business
       )
     );
+    // Close expanded view after status change
+    setExpandedBusiness(null);
   };
 
   const handleView = (business: Business) => {
@@ -88,6 +165,10 @@ export function PendingVerificationPage() {
 
   const handleDownload = (businessId: string) => {
     console.log("Download all documents for:", businessId);
+  };
+
+  const toggleExpanded = (businessId: string) => {
+    setExpandedBusiness(expandedBusiness === businessId ? null : businessId);
   };
 
   // Pagination logic
@@ -135,15 +216,6 @@ export function PendingVerificationPage() {
 
   return (
     <div className="py-4 px-4">
-      {/* Back button */}
-      <div className="mb-4">
-        <Link href="/admin/sme">
-          <Button variant="ghost" icon={ArrowLeft}>
-            Back to SME Management
-          </Button>
-        </Link>
-      </div>
-
       {/* Breadcrumbs */}
       <div className="mb-6">
         <Breadcrumb>
@@ -195,32 +267,200 @@ export function PendingVerificationPage() {
         </div>
       </div>
 
-      {/* SME Table with document verification actions */}
-      <SMETable
-        businesses={paginatedBusinesses}
-        onStatusChange={handleStatusChange}
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={() => {}} // Disable delete for pending verification
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        showDocumentActions={true}
-        onViewDocuments={handleViewDocuments}
-        onDownloadDocuments={handleDownloadDocuments}
-        // Pagination props
-        currentPage={currentPage}
-        totalPages={totalPages}
-        isLoading={isLoading}
-        isPaginationLoading={isPaginationLoading}
-        startIndex={startIndex}
-        endIndex={endIndex}
-        totalItems={totalItems}
-        onPageChange={handlePageChange}
-        // Original businesses for filter options
-        allBusinesses={businesses}
-      />
+      {/* Enhanced SME List with Inline Document Viewing */}
+      <div className="space-y-4">
+        {paginatedBusinesses.map((business) => {
+          const documents = getBusinessDocuments(business.id);
+          const isExpanded = expandedBusiness === business.id;
 
-      {/* Document Viewer */}
+          return (
+            <div
+              key={business.id}
+              className="border rounded-lg overflow-hidden"
+            >
+              {/* Business Header */}
+              <div className="p-4 bg-white hover:bg-gray-50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Building className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">{business.name}</h3>
+                      <p className="text-sm text-gray-600">
+                        {business.category} • {business.municipality}
+                      </p>
+                      <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
+                        <span className="flex items-center">
+                          <User className="w-3 h-3 mr-1" />
+                          {business.ownerName || "N/A"}
+                        </span>
+                        <span className="flex items-center">
+                          <Mail className="w-3 h-3 mr-1" />
+                          {business.email || "N/A"}
+                        </span>
+                        <span className="flex items-center">
+                          <Phone className="w-3 h-3 mr-1" />
+                          {business.contactNumber || "N/A"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Badge
+                      variant="secondary"
+                      className="bg-yellow-100 text-yellow-800"
+                    >
+                      <Clock className="w-3 h-3 mr-1" />
+                      Pending Review
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleExpanded(business.id)}
+                    >
+                      <Eye className="w-4 h-4" />
+                      {isExpanded ? "Hide" : "View"} Documents
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Expanded Document Section */}
+              {isExpanded && (
+                <div className="border-t bg-gray-50">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-medium text-gray-900">
+                        Business Documents
+                      </h4>
+                      <div className="flex items-center space-x-2">
+                        <Button variant="outline" size="sm">
+                          <Download className="w-4 h-4 mr-2" />
+                          Download All
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-red-200 text-red-700 hover:bg-red-50"
+                          onClick={() => handleReject(business.id)}
+                        >
+                          <XCircle className="w-4 h-4 mr-2" />
+                          Reject
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleApprove(business.id)}
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Approve
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Document List */}
+                    <div className="grid gap-3">
+                      {documents.map((doc, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-white rounded-lg border"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-blue-100 rounded-lg">
+                              <FileText className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <div>
+                              <h5 className="font-medium text-sm">
+                                {doc.name}
+                              </h5>
+                              <p className="text-xs text-gray-500">
+                                {doc.type} • {doc.size} • Uploaded{" "}
+                                {doc.uploaded}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {getStatusBadge(doc.status)}
+                            <Button variant="ghost" size="sm">
+                              <Eye className="w-3 h-3" />
+                            </Button>
+                            <Button variant="ghost" size="sm">
+                              <Download className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Business Details Summary */}
+                    <div className="mt-4 p-3 bg-white rounded-lg border">
+                      <h5 className="font-medium text-sm mb-2">
+                        Business Summary
+                      </h5>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                        <div>
+                          <span className="text-gray-500">Address:</span>
+                          <p className="font-medium">
+                            {business.address || "N/A"}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">License:</span>
+                          <p className="font-medium">
+                            {business.businessLicense || "N/A"}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Hours:</span>
+                          <p className="font-medium">
+                            {business.operatingHours || "N/A"}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Website:</span>
+                          <p className="font-medium">
+                            {business.website || "N/A"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex justify-center">
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-gray-600">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Document Viewer (for detailed view) */}
       {selectedBusiness && (
         <DocumentViewer
           business={selectedBusiness}

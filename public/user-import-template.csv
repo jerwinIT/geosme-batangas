@@ -1,0 +1,6 @@
+name,email,phone,municipality,role,status,businessName,businessId,isVerified
+John Doe,john@example.com,09123456789,Batangas City,regular_user,active,,,true
+Maria Santos,maria@tech.com,09234567890,Lipa City,sme_owner,active,Tech Solutions,TECH-001,true
+Admin User,admin@geosme.com,09345678901,Tanauan City,admin,active,,,true
+Pedro Garcia,pedro@retail.com,09456789012,Santo Tomas,sme_owner,pending,Retail Store,RS-002,false
+Ana Reyes,ana@bakery.com,09567890123,Malvar,regular_user,active,,,true 

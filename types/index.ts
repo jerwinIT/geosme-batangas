@@ -140,3 +140,50 @@ export interface UserStats {
   suspendedUsers: number;
   newUsersThisMonth: number;
 }
+
+export interface Review {
+  id: string;
+  businessId: string;
+  businessName: string;
+  reviewerId: string;
+  reviewerName: string;
+  reviewerEmail: string;
+  rating: number;
+  title: string;
+  content: string;
+  status: "pending" | "published" | "flagged" | "rejected";
+  isVerified: boolean;
+  helpfulCount: number;
+  reportCount: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+  flaggedAt?: string;
+  flaggedReason?: string;
+  moderatorNotes?: string;
+  images?: string[];
+  tags?: string[];
+}
+
+export interface ReviewFilter {
+  status?: "all" | "pending" | "published" | "flagged" | "rejected";
+  rating?: "all" | "1" | "2" | "3" | "4" | "5";
+  business?: string;
+  reviewer?: string;
+  search?: string;
+  dateRange?: {
+    start: string;
+    end: string;
+  };
+}
+
+export interface ReviewStats {
+  totalReviews: number;
+  publishedReviews: number;
+  pendingReviews: number;
+  flaggedReviews: number;
+  rejectedReviews: number;
+  averageRating: number;
+  totalHelpfulVotes: number;
+  totalReports: number;
+}

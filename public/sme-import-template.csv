@@ -1,0 +1,5 @@
+name,ownerName,email,contactNumber,municipality,category,address,description,businessLicense,operatingHours,website,priceRange,paymentMethods,latitude,longitude
+Sample Restaurant,Juan Dela Cruz,juan@restaurant.com,09123456789,Batangas City,Restaurant,123 Main Street,Delicious local cuisine,BL-2024-001,9:00 AM - 10:00 PM,www.samplerestaurant.com,₱200-500,"Cash,GCash,Credit Card",13.7563,121.0583
+Tech Solutions,Maria Santos,maria@tech.com,09234567890,Lipa City,Technology,456 Tech Avenue,IT consulting services,TECH-2024-002,8:00 AM - 6:00 PM,www.techsolutions.com,₱1000-5000,"Bank Transfer,Online Payment",,
+Retail Store,Pedro Garcia,pedro@retail.com,09345678901,Tanauan City,Retail,789 Retail Road,General merchandise store,RS-2024-003,7:00 AM - 9:00 PM,www.retailstore.com,₱50-1000,"Cash,Debit Card,GCash",14.0869,121.1497
+Local Bakery,Ana Reyes,ana@bakery.com,09456789012,Santo Tomas,Food,321 Baker Street,Fresh bread and pastries,BAK-2024-004,6:00 AM - 8:00 PM,www.localbakery.com,₱50-300,"Cash,GCash",, 

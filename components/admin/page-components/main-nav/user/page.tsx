@@ -1,24 +1,17 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/common/button";
 import {
   Users,
   CheckCircle,
   Briefcase,
-  Clock,
   ShieldCheck,
-  Filter,
-  Import,
-  Upload,
-  Plus,
   UserPlus,
-  Download,
   TrendingUp,
   AlertTriangle,
 } from "lucide-react";
-import { DashboardWidget, UserTable } from "@/components/admin/ui";
-import { SearchBar } from "@/components/common";
+import { DashboardWidget, UserTable, AddUserForm } from "@/components/admin/ui";
 import { User, UserFilter, UserStats } from "@/types";
 import { mockUsers, mockUserStats } from "@/data/UserDataDummy";
 import { toast } from "sonner";
@@ -32,6 +25,15 @@ export default function UserManagementPage() {
     municipality: "",
     search: "",
   });
+
+  // Add User form state
+  const [isAddUserFormOpen, setIsAddUserFormOpen] = useState(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPaginationLoading, setIsPaginationLoading] = useState(false);
+  const itemsPerPage = 10;
 
   const handleStatusChange = useCallback(
     (id: string, status: User["status"]) => {
@@ -103,19 +105,80 @@ export default function UserManagementPage() {
   }, []);
 
   const handleAddUser = useCallback(() => {
-    // TODO: Implement add user modal/form
-    toast.info("Add user functionality coming soon");
+    setIsAddUserFormOpen(true);
   }, []);
 
-  const handleImportUsers = useCallback(() => {
-    // TODO: Implement import users functionality
-    toast.info("Import users functionality coming soon");
+  const handleAddUserSubmit = useCallback((userData: any) => {
+    // Handle adding single user
+    const newUser: User = {
+      id: `user-${Date.now()}`, // Generate temporary ID
+      ...userData,
+      avatar: "",
+      lastLogin: undefined,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      permissions: userData.permissions || [],
+    };
+    setUsers((prev) => [...prev, newUser]);
+    toast.success("User added successfully");
+    console.log("Added new user:", newUser);
+  }, []);
+
+  const handleImportCSV = useCallback((file: File) => {
+    // Handle CSV import logic here
+    console.log("Importing CSV file:", file.name);
+    toast.info("CSV import functionality coming soon");
+    // TODO: Implement CSV parsing and import logic
   }, []);
 
   const handleExportUsers = useCallback(() => {
-    // TODO: Implement export users functionality
-    toast.info("Export users functionality coming soon");
+    // Handle export logic here
+    console.log("Exporting users");
+    toast.info("Export functionality coming soon");
+    // TODO: Implement export functionality
   }, []);
+
+  // Pagination handlers
+  const handlePageChange = useCallback((page: number) => {
+    setIsPaginationLoading(true);
+    setCurrentPage(page);
+    // Simulate API call delay
+    setTimeout(() => {
+      setIsPaginationLoading(false);
+    }, 500);
+  }, []);
+
+  // Calculate pagination values
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) => {
+      const matchesSearch =
+        !filters.search ||
+        user.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+        user.email.toLowerCase().includes(filters.search.toLowerCase()) ||
+        user.businessName?.toLowerCase().includes(filters.search.toLowerCase());
+
+      const matchesRole =
+        !filters.role || filters.role === "all" || user.role === filters.role;
+
+      const matchesStatus =
+        !filters.status ||
+        filters.status === "all" ||
+        user.status === filters.status;
+
+      const matchesMunicipality =
+        !filters.municipality || user.municipality === filters.municipality;
+
+      return (
+        matchesSearch && matchesRole && matchesStatus && matchesMunicipality
+      );
+    });
+  }, [users, filters]);
+
+  const totalItems = filteredUsers.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
 
   // Calculate real-time stats from current users
   const currentStats: UserStats = {
@@ -152,16 +215,6 @@ export default function UserManagementPage() {
         <div className="flex flex-wrap gap-2">
           <Button onClick={handleAddUser} icon={UserPlus}>
             Add User
-          </Button>
-          <Button variant="secondary" onClick={handleImportUsers} icon={Import}>
-            Import
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={handleExportUsers}
-            icon={Download}
-          >
-            Export
           </Button>
         </div>
       </div>
@@ -219,20 +272,39 @@ export default function UserManagementPage() {
       </div>
 
       {/* User Table */}
-      <div className="bg-white rounded-lg border">
+      <div>
         <UserTable
-          users={users}
+          users={paginatedUsers}
           onStatusChange={handleStatusChange}
           onRoleChange={handleRoleChange}
           onEdit={handleEdit}
           onView={handleView}
+          onExport={handleExportUsers}
           onDelete={handleDelete}
           onSuspend={handleSuspend}
           onActivate={handleActivate}
           filters={filters}
           onFiltersChange={handleFiltersChange}
+          // Pagination props
+          currentPage={currentPage}
+          totalPages={totalPages}
+          isLoading={isLoading}
+          isPaginationLoading={isPaginationLoading}
+          startIndex={startIndex}
+          endIndex={endIndex}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          allUsers={users}
         />
       </div>
+
+      {/* Add User Form */}
+      <AddUserForm
+        isOpen={isAddUserFormOpen}
+        onClose={() => setIsAddUserFormOpen(false)}
+        onAddUser={handleAddUserSubmit}
+        onImportCSV={handleImportCSV}
+      />
     </div>
   );
 }

@@ -16,6 +16,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   MoreHorizontal,
   Eye,
   Edit,
@@ -27,6 +42,7 @@ import {
   MapPin,
   FileText,
   Download,
+  Upload,
 } from "lucide-react";
 import { Business, SMEFilter } from "@/types";
 import { cn } from "@/lib/utils";
@@ -43,6 +59,7 @@ interface SMETableProps {
   showDocumentActions?: boolean;
   onViewDocuments?: (business: Business) => void;
   onDownloadDocuments?: (business: Business) => void;
+  onExport?: () => void;
   // Pagination props
   currentPage?: number;
   totalPages?: number;
@@ -67,6 +84,7 @@ export function SMETable({
   showDocumentActions,
   onViewDocuments,
   onDownloadDocuments,
+  onExport,
   // Pagination props
   currentPage = 1,
   totalPages = 1,
@@ -262,44 +280,39 @@ export function SMETable({
             )}
           </select>
         </div>
+
+        <div className="flex items-end">
+          <Button
+            variant="outline"
+            icon={Upload}
+            onClick={onExport}
+            className="h-10"
+          >
+            Export
+          </Button>
+        </div>
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg overflow-hidden">
+      <div className="bg-white rounded-lg border">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Business
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Owner
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Location
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Category
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Rating
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Registration Date
-                </th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Business</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead>Registration Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {displayBusinesses.map((business) => (
-                <tr key={business.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-4">
+                <TableRow key={business.id} className="hover:bg-gray-50">
+                  <TableCell>
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
@@ -317,8 +330,8 @@ export function SMETable({
                         </div>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-4 py-4">
+                  </TableCell>
+                  <TableCell>
                     <div>
                       <div className="font-medium">
                         {business.ownerName || "N/A"}
@@ -327,28 +340,26 @@ export function SMETable({
                         {business.contactNumber || "N/A"}
                       </div>
                     </div>
-                  </td>
-                  <td className="px-4 py-4">
+                  </TableCell>
+                  <TableCell>
                     <div className="flex items-center text-sm text-gray-500">
                       <MapPin className="w-4 h-4 mr-1" />
                       {business.municipality}
                     </div>
-                  </td>
-                  <td className="px-4 py-4">
+                  </TableCell>
+                  <TableCell>
                     <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-gray-100 text-gray-800 border-gray-200">
                       {business.category}
                     </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    {getStatusBadge(business.status)}
-                  </td>
-                  <td className="px-4 py-4">
+                  </TableCell>
+                  <TableCell>{getStatusBadge(business.status)}</TableCell>
+                  <TableCell>
                     <div className="flex items-center">
                       <Star className="w-4 h-4 text-yellow-400 mr-1" />
                       <span className="text-sm">{business.rating}</span>
                     </div>
-                  </td>
-                  <td className="px-4 py-4">
+                  </TableCell>
+                  <TableCell>
                     <div className="text-sm text-gray-500">
                       {business.registrationDate
                         ? new Date(
@@ -356,8 +367,8 @@ export function SMETable({
                           ).toLocaleDateString()
                         : "N/A"}
                     </div>
-                  </td>
-                  <td className="px-4 py-4 text-right">
+                  </TableCell>
+                  <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -426,282 +437,266 @@ export function SMETable({
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
 
       {/* View Dialog */}
       {isViewDialogOpen && selectedBusiness && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-semibold">Business Details</h2>
-                <button
-                  onClick={() => setIsViewDialogOpen(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <XCircle className="w-6 h-6" />
-                </button>
+        <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Business Details</DialogTitle>
+              <DialogDescription>
+                Detailed information about {selectedBusiness.name}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage
+                    src={selectedBusiness.imageUrl}
+                    alt={selectedBusiness.name}
+                  />
+                  <AvatarFallback>
+                    {selectedBusiness.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold">
+                    {selectedBusiness.name}
+                  </h3>
+                  <p className="text-gray-600">{selectedBusiness.category}</p>
+                  <div className="flex items-center mt-2">
+                    <Star className="w-4 h-4 text-yellow-400 mr-1" />
+                    <span>{selectedBusiness.rating}</span>
+                    <span className="mx-2">•</span>
+                    <span>{selectedBusiness.priceRange}</span>
+                  </div>
+                </div>
+                {getStatusBadge(selectedBusiness.status)}
               </div>
 
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <Avatar className="h-20 w-20">
-                    <AvatarImage
-                      src={selectedBusiness.imageUrl}
-                      alt={selectedBusiness.name}
-                    />
-                    <AvatarFallback>
-                      {selectedBusiness.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold">
-                      {selectedBusiness.name}
-                    </h3>
-                    <p className="text-gray-600">{selectedBusiness.category}</p>
-                    <div className="flex items-center mt-2">
-                      <Star className="w-4 h-4 text-yellow-400 mr-1" />
-                      <span>{selectedBusiness.rating}</span>
-                      <span className="mx-2">•</span>
-                      <span>{selectedBusiness.priceRange}</span>
-                    </div>
-                  </div>
-                  {getStatusBadge(selectedBusiness.status)}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium">Owner Name</label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.ownerName || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">
-                      Contact Number
-                    </label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.contactNumber || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Email</label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.email || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Municipality</label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.municipality}
-                    </p>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="text-sm font-medium">Address</label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.address || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">
-                      Business License
-                    </label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.businessLicense || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">
-                      Registration Date
-                    </label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.registrationDate
-                        ? new Date(
-                            selectedBusiness.registrationDate
-                          ).toLocaleDateString()
-                        : "N/A"}
-                    </p>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="text-sm font-medium">Description</label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.description || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">
-                      Operating Hours
-                    </label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.operatingHours || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Website</label>
-                    <p className="text-sm text-gray-600">
-                      {selectedBusiness.website || "N/A"}
-                    </p>
-                  </div>
-                </div>
-
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Payment Methods</label>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {selectedBusiness.paymentMethods.map((method, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-gray-100 text-gray-800 border-gray-200"
-                      >
-                        {method}
-                      </span>
-                    ))}
-                  </div>
+                  <label className="text-sm font-medium">Owner Name</label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.ownerName || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Contact Number</label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.contactNumber || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Email</label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.email || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Municipality</label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.municipality}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">Address</label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.address || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Business License
+                  </label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.businessLicense || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Registration Date
+                  </label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.registrationDate
+                      ? new Date(
+                          selectedBusiness.registrationDate
+                        ).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">Description</label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.description || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Operating Hours</label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.operatingHours || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Website</label>
+                  <p className="text-sm text-gray-600">
+                    {selectedBusiness.website || "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Payment Methods</label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedBusiness.paymentMethods.map((method, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-gray-100 text-gray-800 border-gray-200"
+                    >
+                      {method}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Edit Dialog */}
       {isEditDialogOpen && selectedBusiness && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-semibold">Edit Business</h2>
-                <button
-                  onClick={() => setIsEditDialogOpen(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <XCircle className="w-6 h-6" />
-                </button>
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Business</DialogTitle>
+              <DialogDescription>
+                Update business information for {selectedBusiness.name}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Business Name
+                  </label>
+                  <Input id="name" defaultValue={selectedBusiness.name} />
+                </div>
+                <div>
+                  <label
+                    htmlFor="owner"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Owner Name
+                  </label>
+                  <Input
+                    id="owner"
+                    defaultValue={selectedBusiness.ownerName || ""}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    defaultValue={selectedBusiness.email || ""}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="phone"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Contact Number
+                  </label>
+                  <Input
+                    id="phone"
+                    defaultValue={selectedBusiness.contactNumber || ""}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="municipality"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Municipality
+                  </label>
+                  <Input
+                    id="municipality"
+                    defaultValue={selectedBusiness.municipality}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="category"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Category
+                  </label>
+                  <Input
+                    id="category"
+                    defaultValue={selectedBusiness.category}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label
+                    htmlFor="address"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Address
+                  </label>
+                  <Textarea
+                    id="address"
+                    defaultValue={selectedBusiness.address || ""}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Description
+                  </label>
+                  <Textarea
+                    id="description"
+                    defaultValue={selectedBusiness.description || ""}
+                  />
+                </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium mb-2"
-                    >
-                      Business Name
-                    </label>
-                    <Input id="name" defaultValue={selectedBusiness.name} />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="owner"
-                      className="block text-sm font-medium mb-2"
-                    >
-                      Owner Name
-                    </label>
-                    <Input
-                      id="owner"
-                      defaultValue={selectedBusiness.ownerName || ""}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium mb-2"
-                    >
-                      Email
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      defaultValue={selectedBusiness.email || ""}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="phone"
-                      className="block text-sm font-medium mb-2"
-                    >
-                      Contact Number
-                    </label>
-                    <Input
-                      id="phone"
-                      defaultValue={selectedBusiness.contactNumber || ""}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="municipality"
-                      className="block text-sm font-medium mb-2"
-                    >
-                      Municipality
-                    </label>
-                    <Input
-                      id="municipality"
-                      defaultValue={selectedBusiness.municipality}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="category"
-                      className="block text-sm font-medium mb-2"
-                    >
-                      Category
-                    </label>
-                    <Input
-                      id="category"
-                      defaultValue={selectedBusiness.category}
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <label
-                      htmlFor="address"
-                      className="block text-sm font-medium mb-2"
-                    >
-                      Address
-                    </label>
-                    <Textarea
-                      id="address"
-                      defaultValue={selectedBusiness.address || ""}
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <label
-                      htmlFor="description"
-                      className="block text-sm font-medium mb-2"
-                    >
-                      Description
-                    </label>
-                    <Textarea
-                      id="description"
-                      defaultValue={selectedBusiness.description || ""}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsEditDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      // Handle save logic here
-                      setIsEditDialogOpen(false);
-                    }}
-                  >
-                    Save Changes
-                  </Button>
-                </div>
+              <div className="flex justify-end space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    // Handle save logic here
+                    setIsEditDialogOpen(false);
+                  }}
+                >
+                  Save Changes
+                </Button>
               </div>
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Pagination */}
@@ -715,6 +710,7 @@ export function SMETable({
           endIndex={endIndex}
           totalItems={totalItems}
           onPageChange={onPageChange}
+          itemType="businesses"
         />
       )}
     </div>
