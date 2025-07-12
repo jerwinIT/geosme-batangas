@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/common/button";
 import {
   Clock,
@@ -16,10 +16,11 @@ import { SMETable } from "@/components/admin/ui/SMETable";
 import { AddSMEForm } from "@/components/admin/ui/AddSMEForm";
 import { Business, SMEFilter, SMEStats } from "@/types";
 import { dummyBusinesses } from "@/data/BusinessDataDummy";
+import { SmePageSkeleton } from "@/components/admin/ui/Skeleton";
 import Link from "next/link";
 
 export default function SmeManagementPage() {
-  const [businesses, setBusinesses] = useState<Business[]>(dummyBusinesses);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
   const [filters, setFilters] = useState<SMEFilter>({
     status: "all",
     municipality: "",
@@ -27,10 +28,13 @@ export default function SmeManagementPage() {
     search: "",
   });
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
+  // Loading states
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isPaginationLoading, setIsPaginationLoading] = useState(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // Add SME form state
@@ -84,9 +88,15 @@ export default function SmeManagementPage() {
   };
 
   const handleFiltersChange = (newFilters: SMEFilter) => {
+    setIsLoading(true);
     setFilters(newFilters);
     // Reset to first page when filters change
     setCurrentPage(1);
+
+    // Simulate filter loading delay
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   };
 
   const handleAddSME = () => {
@@ -159,6 +169,19 @@ export default function SmeManagementPage() {
   const endIndex = startIndex + itemsPerPage;
   const paginatedBusinesses = filteredBusinesses.slice(startIndex, endIndex);
 
+  // Simulate initial data loading
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setIsInitialLoading(true);
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setBusinesses(dummyBusinesses);
+      setIsInitialLoading(false);
+    };
+
+    loadInitialData();
+  }, []);
+
   const handlePageChange = (page: number) => {
     setIsPaginationLoading(true);
     setCurrentPage(page);
@@ -168,24 +191,36 @@ export default function SmeManagementPage() {
     }, 300);
   };
 
+  // Show skeleton loading during initial load
+  if (isInitialLoading) {
+    return <SmePageSkeleton />;
+  }
+
   return (
-    <div className="py-4 px-4">
+    <div className="py-2 sm:py-4 px-2 sm:px-4 lg:px-6">
       {/* Header section with title, description, and buttons */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-text">
             SME Management
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Manage and verify registered SMEs in Batangas
           </p>
         </div>
-        <div className="flex flex-wrap gap-4">
-          <Button icon={Plus} onClick={handleAddSME}>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full lg:w-auto">
+          <Button
+            icon={Plus}
+            onClick={handleAddSME}
+            className="w-full sm:w-auto"
+          >
             Add SME
           </Button>
-          <Link href="/admin/sme/pending-verification">
-            <Button variant="secondary">
+          <Link
+            href="/admin/sme/pending-verification"
+            className="w-full sm:w-auto"
+          >
+            <Button variant="secondary" className="w-full sm:w-auto">
               Pending Verification ({stats.pendingVerification})
             </Button>
           </Link>
@@ -193,35 +228,39 @@ export default function SmeManagementPage() {
       </div>
 
       {/* Dashboard widgets */}
-      <div className="w-full mb-8">
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+      <div className="w-full mb-6 sm:mb-8">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <DashboardWidget
             title="Pending Verification"
-            value={stats.pendingVerification}
+            value={isLoading ? "..." : stats.pendingVerification}
             icon={<Clock />}
             clickable={true}
             onClick={() => setFilters({ ...filters, status: "pending" })}
+            isLoading={isLoading}
           />
           <DashboardWidget
             title="Under Review"
-            value={stats.underReview}
+            value={isLoading ? "..." : stats.underReview}
             icon={<SearchCheck />}
             clickable={true}
             onClick={() => setFilters({ ...filters, status: "under_review" })}
+            isLoading={isLoading}
           />
           <DashboardWidget
             title="Approved SMEs"
-            value={stats.approvedSMEs}
+            value={isLoading ? "..." : stats.approvedSMEs}
             icon={<CheckCircle2 />}
             clickable={true}
             onClick={() => setFilters({ ...filters, status: "approved" })}
+            isLoading={isLoading}
           />
           <DashboardWidget
             title="Rejected SMEs"
-            value={stats.rejectedSMEs}
+            value={isLoading ? "..." : stats.rejectedSMEs}
             icon={<CircleX />}
             clickable={true}
             onClick={() => setFilters({ ...filters, status: "rejected" })}
+            isLoading={isLoading}
           />
         </div>
       </div>

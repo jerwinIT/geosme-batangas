@@ -28,27 +28,35 @@ export default function ReportsPage() {
           </Breadcrumb>
         </div>
       </header>
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Reports</h1>
+      <div className="flex flex-1 flex-col gap-3 sm:gap-4 p-2 sm:p-4 pt-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Reports</h1>
         </div>
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="bg-muted/50 aspect-video rounded-xl p-4">
-            <h3 className="font-semibold">Total Reports</h3>
-            <p className="text-2xl font-bold">1,234</p>
+        <div className="grid auto-rows-min gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="bg-muted/50 aspect-video rounded-xl p-3 sm:p-4">
+            <h3 className="font-semibold text-sm sm:text-base">
+              Total Reports
+            </h3>
+            <p className="text-xl sm:text-2xl font-bold">1,234</p>
           </div>
-          <div className="bg-muted/50 aspect-video rounded-xl p-4">
-            <h3 className="font-semibold">Active Reports</h3>
-            <p className="text-2xl font-bold">1,156</p>
+          <div className="bg-muted/50 aspect-video rounded-xl p-3 sm:p-4">
+            <h3 className="font-semibold text-sm sm:text-base">
+              Active Reports
+            </h3>
+            <p className="text-xl sm:text-2xl font-bold">1,156</p>
           </div>
-          <div className="bg-muted/50 aspect-video rounded-xl p-4">
-            <h3 className="font-semibold">Pending Approval Reports</h3>
-            <p className="text-2xl font-bold">78</p>
+          <div className="bg-muted/50 aspect-video rounded-xl p-3 sm:p-4 sm:col-span-2 lg:col-span-1">
+            <h3 className="font-semibold text-sm sm:text-base">
+              Pending Approval Reports
+            </h3>
+            <p className="text-xl sm:text-2xl font-bold">78</p>
           </div>
         </div>
-        <div className="bg-muted/50 min-h-[400px] flex-1 rounded-xl p-4">
-          <h2 className="text-lg font-semibold mb-4">SME List</h2>
-          <p className="text-muted-foreground">
+        <div className="bg-muted/50 min-h-[300px] sm:min-h-[400px] flex-1 rounded-xl p-3 sm:p-4">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+            SME List
+          </h2>
+          <p className="text-muted-foreground text-sm">
             Reports management interface will be implemented here.
           </p>
         </div>

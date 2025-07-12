@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/components/common/button";
 import {
   Clock,
@@ -18,10 +18,11 @@ import {
 import { DashboardWidget, ReviewTable } from "@/components/admin/ui";
 import { Review, ReviewFilter, ReviewStats } from "@/types";
 import { mockReviews, mockReviewStats } from "@/data/ReviewDataDummy";
+import { ReviewPageSkeleton } from "@/components/admin/ui/Skeleton";
 import { toast } from "sonner";
 
 export default function ReviewsManagementPage() {
-  const [reviews, setReviews] = useState<Review[]>(mockReviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewStats>(mockReviewStats);
   const [filters, setFilters] = useState<ReviewFilter>({
     status: "all",
@@ -31,10 +32,13 @@ export default function ReviewsManagementPage() {
     search: "",
   });
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
+  // Loading states
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isPaginationLoading, setIsPaginationLoading] = useState(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const handleStatusChange = useCallback(
@@ -115,8 +119,29 @@ export default function ReviewsManagementPage() {
     toast.success("Review flagged for moderation");
   }, []);
 
+  // Simulate initial data loading
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setIsInitialLoading(true);
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setReviews(mockReviews);
+      setIsInitialLoading(false);
+    };
+
+    loadInitialData();
+  }, []);
+
   const handleFiltersChange = useCallback((newFilters: ReviewFilter) => {
+    setIsLoading(true);
     setFilters(newFilters);
+    // Reset to first page when filters change
+    setCurrentPage(1);
+
+    // Simulate filter loading delay
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   }, []);
 
   const handleExportReviews = useCallback(() => {
@@ -200,71 +225,90 @@ export default function ReviewsManagementPage() {
     totalReports: reviews.reduce((sum, r) => sum + r.reportCount, 0),
   };
 
+  // Show skeleton loading during initial load
+  if (isInitialLoading) {
+    return <ReviewPageSkeleton />;
+  }
+
   return (
-    <div className="py-4 px-4 space-y-6">
+    <div className="py-2 sm:py-4 px-2 sm:px-4 lg:px-6 space-y-4 sm:space-y-6">
       {/* Header section with title, description, and buttons */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-text">
             Reviews Management
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Manage and verify registered reviews in Batangas
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button icon={Settings}>Moderation Settings</Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+          <Button icon={Settings} className="w-full sm:w-auto">
+            Moderation Settings
+          </Button>
         </div>
       </div>
 
       {/* Dashboard widgets */}
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardWidget
           title="Total Reviews"
-          value={currentStats.totalReviews}
+          value={isLoading ? "..." : currentStats.totalReviews}
           icon={<Clock className="text-blue-500" />}
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="Published"
-          value={currentStats.publishedReviews}
+          value={isLoading ? "..." : currentStats.publishedReviews}
           icon={<SearchCheck className="text-green-500" />}
-          footer={`${Math.round(
-            (currentStats.publishedReviews / currentStats.totalReviews) * 100
-          )}% of total`}
+          footer={
+            isLoading
+              ? ""
+              : `${Math.round(
+                  (currentStats.publishedReviews / currentStats.totalReviews) *
+                    100
+                )}% of total`
+          }
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="Pending"
-          value={currentStats.pendingReviews}
+          value={isLoading ? "..." : currentStats.pendingReviews}
           icon={<Clock className="text-yellow-500" />}
-          footer="Awaiting moderation"
+          footer={isLoading ? "" : "Awaiting moderation"}
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="Flagged"
-          value={currentStats.flaggedReviews}
+          value={isLoading ? "..." : currentStats.flaggedReviews}
           icon={<Flag className="text-orange-500" />}
-          footer="Needs attention"
+          footer={isLoading ? "" : "Needs attention"}
+          isLoading={isLoading}
         />
       </div>
 
       {/* Additional stats row */}
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <DashboardWidget
           title="Rejected"
-          value={currentStats.rejectedReviews}
+          value={isLoading ? "..." : currentStats.rejectedReviews}
           icon={<CircleX className="text-red-500" />}
-          footer="Not approved"
+          footer={isLoading ? "" : "Not approved"}
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="Avg Rating"
-          value={currentStats.averageRating.toString()}
+          value={isLoading ? "..." : currentStats.averageRating.toString()}
           icon={<Star className="text-yellow-500" />}
-          footer="Overall score"
+          footer={isLoading ? "" : "Overall score"}
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="Helpful Votes"
-          value={currentStats.totalHelpfulVotes}
+          value={isLoading ? "..." : currentStats.totalHelpfulVotes}
           icon={<ThumbsUp className="text-green-500" />}
-          footer="Community engagement"
+          footer={isLoading ? "" : "Community engagement"}
+          isLoading={isLoading}
         />
       </div>
 
