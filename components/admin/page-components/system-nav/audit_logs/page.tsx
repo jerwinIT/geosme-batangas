@@ -69,6 +69,7 @@ import {
   Download as DownloadIcon,
   XCircle,
 } from "lucide-react";
+import { AuditPageSkeleton } from "@/components/admin/ui/Skeleton";
 
 interface AuditLog {
   id: string;
@@ -86,7 +87,8 @@ interface AuditLog {
     | "user_management"
     | "sme_management"
     | "analytics"
-    | "file_operations";
+    | "file_operations"
+    | string;
   severity: "low" | "medium" | "high" | "critical";
   description: string;
   ipAddress: string;
@@ -120,6 +122,7 @@ export default function AuditLogsPage() {
     topCategories: [],
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
   // Filters
@@ -311,9 +314,10 @@ export default function AuditLogsPage() {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+      setIsInitialLoading(true);
       try {
         // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1500));
 
         const mockLogs = generateMockLogs();
         setLogs(mockLogs);
@@ -367,6 +371,7 @@ export default function AuditLogsPage() {
         console.error("Failed to load audit logs:", error);
       } finally {
         setIsLoading(false);
+        setIsInitialLoading(false);
       }
     };
 
@@ -541,43 +546,33 @@ export default function AuditLogsPage() {
     window.location.reload();
   };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Audit Logs</h1>
-            <p className="text-gray-600 mt-2">
-              System activity and security monitoring
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center justify-center h-64">
-          <div className="flex items-center gap-2">
-            <RefreshCw className="w-6 h-6 animate-spin" />
-            <span>Loading audit logs...</span>
-          </div>
-        </div>
-      </div>
-    );
+  // Show skeleton loading during initial load
+  if (isInitialLoading) {
+    return <AuditPageSkeleton />;
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4 lg:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Audit Logs</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">
+            Audit Logs
+          </h1>
+          <p className="text-gray-600 mt-1 sm:mt-2 text-sm">
             System activity and security monitoring
           </p>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={handleRefresh}>
+        <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            className="w-full sm:w-auto"
+          >
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
           </Button>
-          <Button onClick={handleExport}>
+          <Button onClick={handleExport} className="w-full sm:w-auto">
             <Download className="w-4 h-4 mr-2" />
             Export CSV
           </Button>
@@ -585,7 +580,7 @@ export default function AuditLogsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Logs</CardTitle>
@@ -657,7 +652,7 @@ export default function AuditLogsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="space-y-2">
               <Label>Search</Label>
               <div className="relative">
@@ -733,7 +728,7 @@ export default function AuditLogsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-4">
             <div className="space-y-2">
               <Label>Start Date</Label>
               <Input

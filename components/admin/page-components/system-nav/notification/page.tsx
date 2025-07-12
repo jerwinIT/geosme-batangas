@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/common/button";
 import { Search } from "lucide-react";
 import DashboardWidget from "@/components/admin/ui/DashboardWidget";
@@ -18,7 +18,9 @@ import {
   MapPin,
   Star,
   MessageSquare,
+  X,
 } from "lucide-react";
+import { NotificationPageSkeleton } from "@/components/admin/ui/Skeleton";
 
 interface Notification {
   id: string;
@@ -128,15 +130,432 @@ const typeColors = {
   alert: "bg-red-100 text-red-800",
 };
 
+// SendNotificationModal Component
+interface SendNotificationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function SendNotificationModal({
+  isOpen,
+  onClose,
+}: SendNotificationModalProps) {
+  const [notification, setNotification] = useState({
+    title: "",
+    message: "",
+    type: "system" as const,
+    priority: "medium" as const,
+    recipient: "all" as const,
+  });
+
+  const handleSend = () => {
+    // Send notification logic here
+    console.log("Sending notification:", notification);
+    setNotification({
+      title: "",
+      message: "",
+      type: "system",
+      priority: "medium",
+      recipient: "all",
+    });
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">Send Notification</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Create and send a new notification to users
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {/* Basic Information */}
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Title</label>
+              <input
+                type="text"
+                value={notification.title}
+                onChange={(e) =>
+                  setNotification((prev) => ({
+                    ...prev,
+                    title: e.target.value,
+                  }))
+                }
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                placeholder="Notification title"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Message</label>
+              <textarea
+                value={notification.message}
+                onChange={(e) =>
+                  setNotification((prev) => ({
+                    ...prev,
+                    message: e.target.value,
+                  }))
+                }
+                rows={4}
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                placeholder="Notification message"
+              />
+            </div>
+          </div>
+
+          {/* Notification Settings */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="text-sm font-medium">Type</label>
+              <select
+                value={notification.type}
+                onChange={(e) =>
+                  setNotification((prev) => ({
+                    ...prev,
+                    type: e.target.value as any,
+                  }))
+                }
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              >
+                <option value="system">System</option>
+                <option value="user">User</option>
+                <option value="sme">SME</option>
+                <option value="review">Review</option>
+                <option value="alert">Alert</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Priority</label>
+              <select
+                value={notification.priority}
+                onChange={(e) =>
+                  setNotification((prev) => ({
+                    ...prev,
+                    priority: e.target.value as any,
+                  }))
+                }
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Recipient</label>
+              <select
+                value={notification.recipient}
+                onChange={(e) =>
+                  setNotification((prev) => ({
+                    ...prev,
+                    recipient: e.target.value as any,
+                  }))
+                }
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              >
+                <option value="all">All Users</option>
+                <option value="admin">Admins Only</option>
+                <option value="sme">SME Owners</option>
+                <option value="users">Regular Users</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 border-t bg-gray-50 flex justify-end gap-3">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSend}
+            disabled={!notification.title || !notification.message}
+          >
+            Send Notification
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// NotificationSettings Component
+interface NotificationSettingsProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function NotificationSettings({ isOpen, onClose }: NotificationSettingsProps) {
+  const [settings, setSettings] = useState({
+    emailNotifications: true,
+    smsNotifications: false,
+    pushNotifications: true,
+    autoArchive: false,
+    archiveAfterDays: 30,
+    emailProvider: "smtp",
+    smtpHost: "smtp.gmail.com",
+    smtpPort: "587",
+    smtpUsername: "",
+    smtpPassword: "",
+  });
+
+  const handleSave = () => {
+    // Save notification settings logic here
+    console.log("Saving notification settings:", settings);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">Notification Settings</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Configure notification preferences and delivery methods
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {/* Notification Types */}
+          <div>
+            <h3 className="text-lg font-medium mb-4">Notification Types</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium">
+                    Email Notifications
+                  </label>
+                  <p className="text-xs text-gray-500">
+                    Receive notifications via email
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={settings.emailNotifications}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      emailNotifications: e.target.checked,
+                    }))
+                  }
+                  className="rounded border-gray-300"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium">
+                    SMS Notifications
+                  </label>
+                  <p className="text-xs text-gray-500">
+                    Receive notifications via SMS
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={settings.smsNotifications}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      smsNotifications: e.target.checked,
+                    }))
+                  }
+                  className="rounded border-gray-300"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium">
+                    Push Notifications
+                  </label>
+                  <p className="text-xs text-gray-500">
+                    Receive browser push notifications
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={settings.pushNotifications}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      pushNotifications: e.target.checked,
+                    }))
+                  }
+                  className="rounded border-gray-300"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Auto Archive Settings */}
+          <div>
+            <h3 className="text-lg font-medium mb-4">Auto Archive Settings</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium">Auto Archive</label>
+                  <p className="text-xs text-gray-500">
+                    Automatically archive old notifications
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={settings.autoArchive}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      autoArchive: e.target.checked,
+                    }))
+                  }
+                  className="rounded border-gray-300"
+                />
+              </div>
+              {settings.autoArchive && (
+                <div>
+                  <label className="text-sm font-medium">
+                    Archive After (days)
+                  </label>
+                  <input
+                    type="number"
+                    value={settings.archiveAfterDays}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        archiveAfterDays: parseInt(e.target.value) || 30,
+                      }))
+                    }
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    min="1"
+                    max="365"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Email Configuration */}
+          {settings.emailNotifications && (
+            <div>
+              <h3 className="text-lg font-medium mb-4">Email Configuration</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">SMTP Host</label>
+                  <input
+                    type="text"
+                    value={settings.smtpHost}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        smtpHost: e.target.value,
+                      }))
+                    }
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    placeholder="smtp.gmail.com"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">SMTP Port</label>
+                  <input
+                    type="text"
+                    value={settings.smtpPort}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        smtpPort: e.target.value,
+                      }))
+                    }
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    placeholder="587"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">SMTP Username</label>
+                  <input
+                    type="email"
+                    value={settings.smtpUsername}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        smtpUsername: e.target.value,
+                      }))
+                    }
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    placeholder="your-email@gmail.com"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">SMTP Password</label>
+                  <input
+                    type="password"
+                    value={settings.smtpPassword}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        smtpPassword: e.target.value,
+                      }))
+                    }
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="p-6 border-t bg-gray-50 flex justify-end gap-3">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave}>Save Settings</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function NotificationPage() {
-  const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
     []
   );
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isSendNotificationOpen, setIsSendNotificationOpen] =
+    useState<boolean>(false);
+
+  // Loading states
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const filteredNotifications = notifications.filter((notification) => {
     const matchesFilter =
@@ -158,6 +577,7 @@ export default function NotificationPage() {
     notificationId: string,
     newStatus: Notification["status"]
   ) => {
+    setIsLoading(true);
     setNotifications((prev) =>
       prev.map((notification) =>
         notification.id === notificationId
@@ -172,11 +592,17 @@ export default function NotificationPage() {
           : notification
       )
     );
+
+    // Simulate loading delay
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
   };
 
   const handleBulkAction = (action: "read" | "archived" | "delete") => {
     if (selectedNotifications.length === 0) return;
 
+    setIsLoading(true);
     setNotifications((prev) => {
       if (action === "delete") {
         return prev.filter(
@@ -199,6 +625,11 @@ export default function NotificationPage() {
     });
 
     setSelectedNotifications([]);
+
+    // Simulate loading delay
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   };
 
   const handleSelectAll = () => {
@@ -209,28 +640,53 @@ export default function NotificationPage() {
     }
   };
 
+  // Simulate initial data loading
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setIsInitialLoading(true);
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setNotifications(mockNotifications);
+      setIsInitialLoading(false);
+    };
+
+    loadInitialData();
+  }, []);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
   };
 
+  // Show skeleton loading during initial load
+  if (isInitialLoading) {
+    return <NotificationPageSkeleton />;
+  }
+
   return (
-    <div className="py-4 px-4">
+    <div className="py-2 sm:py-4 px-2 sm:px-4 lg:px-6">
       {/* Header section */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold tracking-tight">
             Notification Management
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Manage system notifications, user alerts, and communication
           </p>
         </div>
-        <div className="flex flex-wrap gap-4">
-          <Button icon={Send}>Send Notification</Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+          <Button
+            icon={Send}
+            onClick={() => setIsSendNotificationOpen(true)}
+            className="w-full sm:w-auto"
+          >
+            Send Notification
+          </Button>
           <Button
             variant="secondary"
             icon={Settings}
             onClick={() => setIsSettingsOpen(true)}
+            className="w-full sm:w-auto"
           >
             Settings
           </Button>
@@ -238,30 +694,38 @@ export default function NotificationPage() {
       </div>
 
       {/* Dashboard widgets */}
-      <div className="w-full mb-8">
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+      <div className="w-full mb-6 sm:mb-8">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <DashboardWidget
             title="Total Notifications"
-            value={stats.total}
+            value={isLoading ? "..." : stats.total}
             icon={<Bell />}
+            isLoading={isLoading}
           />
           <DashboardWidget
             title="Unread"
-            value={stats.unread}
+            value={isLoading ? "..." : stats.unread}
             icon={<Clock />}
+            isLoading={isLoading}
           />
-          <DashboardWidget title="Read" value={stats.read} icon={<Eye />} />
+          <DashboardWidget
+            title="Read"
+            value={isLoading ? "..." : stats.read}
+            icon={<Eye />}
+            isLoading={isLoading}
+          />
           <DashboardWidget
             title="Archived"
-            value={stats.archived}
+            value={isLoading ? "..." : stats.archived}
             icon={<EyeOff />}
+            isLoading={isLoading}
           />
         </div>
       </div>
 
       {/* Search, Filter, and Actions section */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-        <div className="w-full md:flex-1">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-4">
+        <div className="w-full lg:flex-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
@@ -273,7 +737,7 @@ export default function NotificationPage() {
             />
           </div>
         </div>
-        <div className="flex gap-2 md:justify-end">
+        <div className="flex flex-col sm:flex-row gap-2 lg:justify-end">
           <select
             value={selectedFilter}
             onChange={(e) => setSelectedFilter(e.target.value)}
@@ -286,11 +750,12 @@ export default function NotificationPage() {
           </select>
 
           {selectedNotifications.length > 0 && (
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleBulkAction("read")}
+                className="w-full sm:w-auto"
               >
                 Mark Read
               </Button>
@@ -298,6 +763,7 @@ export default function NotificationPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => handleBulkAction("archived")}
+                className="w-full sm:w-auto"
               >
                 Archive
               </Button>
@@ -305,7 +771,7 @@ export default function NotificationPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => handleBulkAction("delete")}
-                className="text-red-600 hover:text-red-700"
+                className="text-red-600 hover:text-red-700 w-full sm:w-auto"
               >
                 Delete
               </Button>
@@ -481,6 +947,12 @@ export default function NotificationPage() {
       <NotificationSettings
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+
+      {/* Send Notification Modal */}
+      <SendNotificationModal
+        isOpen={isSendNotificationOpen}
+        onClose={() => setIsSendNotificationOpen(false)}
       />
     </div>
   );

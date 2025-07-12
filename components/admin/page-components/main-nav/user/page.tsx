@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/components/common/button";
 import {
   Users,
@@ -14,10 +14,11 @@ import {
 import { DashboardWidget, UserTable, AddUserForm } from "@/components/admin/ui";
 import { User, UserFilter, UserStats } from "@/types";
 import { mockUsers, mockUserStats } from "@/data/UserDataDummy";
+import { UserPageSkeleton } from "@/components/admin/ui/Skeleton";
 import { toast } from "sonner";
 
 export default function UserManagementPage() {
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [userStats, setUserStats] = useState<UserStats>(mockUserStats);
   const [filters, setFilters] = useState<UserFilter>({
     role: "all",
@@ -26,13 +27,16 @@ export default function UserManagementPage() {
     search: "",
   });
 
+  // Loading states
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPaginationLoading, setIsPaginationLoading] = useState(false);
+
   // Add User form state
   const [isAddUserFormOpen, setIsAddUserFormOpen] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isPaginationLoading, setIsPaginationLoading] = useState(false);
   const itemsPerPage = 10;
 
   const handleStatusChange = useCallback(
@@ -100,8 +104,29 @@ export default function UserManagementPage() {
     toast.success("User activated successfully");
   }, []);
 
+  // Simulate initial data loading
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setIsInitialLoading(true);
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setUsers(mockUsers);
+      setIsInitialLoading(false);
+    };
+
+    loadInitialData();
+  }, []);
+
   const handleFiltersChange = useCallback((newFilters: UserFilter) => {
+    setIsLoading(true);
     setFilters(newFilters);
+    // Reset to first page when filters change
+    setCurrentPage(1);
+
+    // Simulate filter loading delay
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   }, []);
 
   const handleAddUser = useCallback(() => {
@@ -200,74 +225,96 @@ export default function UserManagementPage() {
     }).length,
   };
 
+  // Show skeleton loading during initial load
+  if (isInitialLoading) {
+    return <UserPageSkeleton />;
+  }
+
   return (
-    <div className="py-4 px-4 space-y-6">
+    <div className="py-2 sm:py-4 px-2 sm:px-4 lg:px-6 space-y-4 sm:space-y-6">
       {/* Header section with title, description, and buttons */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-text">
             User Management
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Manage platform users, their roles, and permissions
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button onClick={handleAddUser} icon={UserPlus}>
+        <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+          <Button
+            onClick={handleAddUser}
+            icon={UserPlus}
+            className="w-full sm:w-auto"
+          >
             Add User
           </Button>
         </div>
       </div>
 
       {/* Dashboard widgets */}
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardWidget
           title="Total Users"
-          value={currentStats.totalUsers}
+          value={isLoading ? "..." : currentStats.totalUsers}
           icon={<Users className="text-blue-500" />}
-          footer={`${currentStats.newUsersThisMonth} new this month`}
+          footer={
+            isLoading ? "" : `${currentStats.newUsersThisMonth} new this month`
+          }
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="Active Users"
-          value={currentStats.activeUsers}
+          value={isLoading ? "..." : currentStats.activeUsers}
           icon={<CheckCircle className="text-green-500" />}
-          footer={`${Math.round(
-            (currentStats.activeUsers / currentStats.totalUsers) * 100
-          )}% of total`}
+          footer={
+            isLoading
+              ? ""
+              : `${Math.round(
+                  (currentStats.activeUsers / currentStats.totalUsers) * 100
+                )}% of total`
+          }
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="SME Owners"
-          value={currentStats.smeOwners}
+          value={isLoading ? "..." : currentStats.smeOwners}
           icon={<Briefcase className="text-purple-500" />}
-          footer="Business owners"
+          footer={isLoading ? "" : "Business owners"}
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="Admins"
-          value={currentStats.admins}
+          value={isLoading ? "..." : currentStats.admins}
           icon={<ShieldCheck className="text-red-500" />}
-          footer="System administrators"
+          footer={isLoading ? "" : "System administrators"}
+          isLoading={isLoading}
         />
       </div>
 
       {/* Additional stats row */}
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <DashboardWidget
           title="Regular Users"
-          value={currentStats.regularUsers}
+          value={isLoading ? "..." : currentStats.regularUsers}
           icon={<Users className="text-gray-500" />}
-          footer="Platform users"
+          footer={isLoading ? "" : "Platform users"}
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="Suspended Users"
-          value={currentStats.suspendedUsers}
+          value={isLoading ? "..." : currentStats.suspendedUsers}
           icon={<AlertTriangle className="text-orange-500" />}
-          footer="Temporarily disabled"
+          footer={isLoading ? "" : "Temporarily disabled"}
+          isLoading={isLoading}
         />
         <DashboardWidget
           title="New Users (30 days)"
-          value={currentStats.newUsersThisMonth}
+          value={isLoading ? "..." : currentStats.newUsersThisMonth}
           icon={<TrendingUp className="text-green-500" />}
-          footer="Recent registrations"
+          footer={isLoading ? "" : "Recent registrations"}
+          isLoading={isLoading}
         />
       </div>
 

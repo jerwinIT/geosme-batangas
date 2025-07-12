@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/common/button";
 import {
   Clock,
@@ -42,6 +42,7 @@ import { SearchBar } from "@/components/common";
 import { Business } from "@/types";
 import { dummyBusinesses } from "@/data/BusinessDataDummy";
 import { Municipalities } from "@/data/Municipalities";
+import { MapPageSkeleton } from "@/components/admin/ui/Skeleton";
 import {
   Card,
   CardContent,
@@ -134,6 +135,10 @@ export default function MapManagementPage() {
   );
   const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
 
+  // Loading states
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
   // Filter businesses based on current filters
   const filteredBusinesses = useMemo(() => {
     return businessesWithCoordinates.filter((business) => {
@@ -203,6 +208,18 @@ export default function MapManagementPage() {
       duplicateLocations: 0, // Would be calculated based on proximity
       qualityScore,
     };
+  }, []);
+
+  // Simulate initial data loading
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setIsInitialLoading(true);
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setIsInitialLoading(false);
+    };
+
+    loadInitialData();
   }, []);
 
   // Get unique categories
@@ -303,23 +320,32 @@ export default function MapManagementPage() {
     }
   };
 
+  // Show skeleton loading during initial load
+  if (isInitialLoading) {
+    return <MapPageSkeleton />;
+  }
+
   return (
-    <div className="py-4 px-4 grid gap-6">
+    <div className="py-2 sm:py-4 px-2 sm:px-4 lg:px-6 grid gap-4 sm:gap-6">
       {/* Header section with title, description, and buttons */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-text">
             Map Management
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Manage and verify registered SMEs in Batangas on the map
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" icon={Import}>
+        <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+          <Button variant="outline" icon={Import} className="w-full sm:w-auto">
             Import Locations
           </Button>
-          <Button icon={Plus} onClick={handleAddLocation}>
+          <Button
+            icon={Plus}
+            onClick={handleAddLocation}
+            className="w-full sm:w-auto"
+          >
             Add Location
           </Button>
         </div>
@@ -327,52 +353,56 @@ export default function MapManagementPage() {
 
       {/* Dashboard widgets */}
       <div className="w-full">
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <DashboardWidget
             title="Total Locations"
-            value={metrics.totalLocations}
+            value={isLoading ? "..." : metrics.totalLocations}
             icon={<MapPin />}
+            isLoading={isLoading}
           />
           <DashboardWidget
             title="Published"
-            value={metrics.published}
+            value={isLoading ? "..." : metrics.published}
             icon={<SearchCheck />}
+            isLoading={isLoading}
           />
           <DashboardWidget
             title="Pending"
-            value={metrics.pending}
+            value={isLoading ? "..." : metrics.pending}
             icon={<CheckCircle2 />}
+            isLoading={isLoading}
           />
           <DashboardWidget
             title="Issues"
-            value={metrics.issues}
+            value={isLoading ? "..." : metrics.issues}
             icon={<CircleX />}
+            isLoading={isLoading}
           />
         </div>
       </div>
 
       {/* Map Controls and Filters */}
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col xl:flex-row gap-4">
         {/* Map Container */}
         <div className="flex-1">
-          <Card className="h-[600px]">
+          <Card className="h-[400px] sm:h-[500px] lg:h-[600px]">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-5 w-5" />
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
                     Interactive Map
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
                     View all locations on the map and filter by municipality
                   </CardDescription>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <Select
                     value={mapView}
                     onValueChange={(value: any) => setMapView(value)}
                   >
-                    <SelectTrigger className="w-32">
+                    <SelectTrigger className="w-full sm:w-32">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -386,10 +416,16 @@ export default function MapManagementPage() {
                     size="sm"
                     icon={Layers}
                     onClick={() => setShowHeatmap(!showHeatmap)}
+                    className="w-full sm:w-auto"
                   >
                     {showHeatmap ? "Hide" : "Show"} Heatmap
                   </Button>
-                  <Button variant="outline" size="sm" icon={Settings}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon={Settings}
+                    className="w-full sm:w-auto"
+                  >
                     Settings
                   </Button>
                 </div>
@@ -409,7 +445,7 @@ export default function MapManagementPage() {
         </div>
 
         {/* Map Controls Sidebar */}
-        <div className="w-full lg:w-80 space-y-4">
+        <div className="w-full xl:w-80 space-y-4">
           {/* Filters */}
           <Card>
             <CardHeader>

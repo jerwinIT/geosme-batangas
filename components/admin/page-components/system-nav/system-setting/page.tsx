@@ -30,7 +30,6 @@ import {
 } from "@/components/ui/tooltip";
 import {
   Settings,
-  Database,
   Map,
   Users,
   Shield,
@@ -81,13 +80,6 @@ interface SystemSettings {
   defaultZoom: string;
   mapApiKey: string;
   mapProvider: "google" | "openstreetmap" | "mapbox";
-
-  // Database Settings
-  databaseUrl: string;
-  databaseType: "postgresql" | "mysql" | "sqlite";
-  maxConnections: string;
-  connectionTimeout: string;
-  enableSSL: boolean;
 
   // Security Settings
   sessionTimeout: string;
@@ -161,11 +153,6 @@ export default function SystemSettingPage() {
     defaultZoom: "10",
     mapApiKey: "••••••••••••••••••••••••••••••••",
     mapProvider: "google",
-    databaseUrl: "postgresql://localhost:5432/geosme_batangas",
-    databaseType: "postgresql",
-    maxConnections: "20",
-    connectionTimeout: "30",
-    enableSSL: true,
     sessionTimeout: "3600",
     maxLoginAttempts: "5",
     passwordMinLength: "8",
@@ -245,8 +232,6 @@ export default function SystemSettingPage() {
       errors.appName = "Application name is required";
     if (!settings.contactEmail.trim())
       errors.contactEmail = "Contact email is required";
-    if (!settings.databaseUrl.trim())
-      errors.databaseUrl = "Database URL is required";
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -255,8 +240,6 @@ export default function SystemSettingPage() {
     }
 
     // Number validations
-    if (parseInt(settings.maxConnections) < 1)
-      errors.maxConnections = "Must be at least 1";
     if (parseInt(settings.sessionTimeout) < 300)
       errors.sessionTimeout = "Must be at least 300 seconds";
     if (parseInt(settings.passwordMinLength) < 6)
@@ -320,11 +303,6 @@ export default function SystemSettingPage() {
         defaultZoom: "10",
         mapApiKey: "••••••••••••••••••••••••••••••••",
         mapProvider: "google",
-        databaseUrl: "postgresql://localhost:5432/geosme_batangas",
-        databaseType: "postgresql",
-        maxConnections: "20",
-        connectionTimeout: "30",
-        enableSSL: true,
         sessionTimeout: "3600",
         maxLoginAttempts: "5",
         passwordMinLength: "8",
@@ -479,33 +457,40 @@ export default function SystemSettingPage() {
   };
 
   return (
-    <div className="space-y-6 p-6 max-w-7xl mx-auto">
+    <div className="py-2 sm:py-4 px-2 sm:px-4 lg:px-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text">System Settings</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text">
+            System Settings
+          </h1>
+          <p className="text-gray-600 mt-1 sm:mt-2 text-sm">
             Configure system environment and application settings for GeoSME
             Batangas
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
           {hasUnsavedChanges && (
             <Badge
               variant="secondary"
-              className="bg-yellow-100 text-yellow-800"
+              className="bg-yellow-100 text-yellow-800 w-full sm:w-auto text-center"
             >
               Unsaved Changes
             </Badge>
           )}
-          <Button variant="outline" onClick={handleReset} disabled={isLoading}>
+          <Button
+            variant="outline"
+            onClick={handleReset}
+            disabled={isLoading}
+            className="w-full sm:w-auto"
+          >
             <RefreshCw className="w-4 h-4 mr-2" />
             Reset to Defaults
           </Button>
           <Button
             onClick={handleSave}
             disabled={isLoading || !hasUnsavedChanges}
-            className="min-w-[140px]"
+            className="min-w-[140px] w-full sm:w-auto"
           >
             {isLoading ? (
               <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -536,40 +521,49 @@ export default function SystemSettingPage() {
       )}
 
       {/* Settings Tabs */}
-      <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="general" className="flex items-center gap-2">
-            <Settings className="w-4 h-4" />
-            General
-          </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-2">
-            <Shield className="w-4 h-4" />
-            Security
-          </TabsTrigger>
-          <TabsTrigger value="database" className="flex items-center gap-2">
-            <Database className="w-4 h-4" />
-            Database
+      <Tabs defaultValue="general" className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2">
+          <TabsTrigger
+            value="general"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+          >
+            <Settings className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">General</span>
           </TabsTrigger>
           <TabsTrigger
-            value="notifications"
-            className="flex items-center gap-2"
+            value="security"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
           >
-            <Bell className="w-4 h-4" />
-            Notifications
+            <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Security</span>
           </TabsTrigger>
-          <TabsTrigger value="sme" className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            SME Settings
+
+          <TabsTrigger
+            value="notifications"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+          >
+            <Bell className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Notifications</span>
           </TabsTrigger>
-          <TabsTrigger value="advanced" className="flex items-center gap-2">
-            <Zap className="w-4 h-4" />
-            Advanced
+          <TabsTrigger
+            value="sme"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+          >
+            <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">SME Settings</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="advanced"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+          >
+            <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Advanced</span>
           </TabsTrigger>
         </TabsList>
 
         {/* General Settings Tab */}
-        <TabsContent value="general" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TabsContent value="general" className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Application Settings */}
             <Card>
               <CardHeader>
@@ -892,75 +886,6 @@ export default function SystemSettingPage() {
                   undefined,
                   undefined,
                   "Enable CSRF token protection"
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Database Settings Tab */}
-        <TabsContent value="database" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Database Configuration */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Database className="w-5 h-5" />
-                  Database Configuration
-                </CardTitle>
-                <CardDescription>
-                  Database connection and performance settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {renderField(
-                  "databaseType",
-                  "Database Type",
-                  "select",
-                  undefined,
-                  [
-                    { value: "postgresql", label: "PostgreSQL" },
-                    { value: "mysql", label: "MySQL" },
-                    { value: "sqlite", label: "SQLite" },
-                  ],
-                  undefined,
-                  "Database management system"
-                )}
-                {renderField(
-                  "databaseUrl",
-                  "Database URL",
-                  "text",
-                  "postgresql://localhost:5432/database",
-                  undefined,
-                  <Server className="w-4 h-4" />,
-                  "Database connection string"
-                )}
-                {renderField(
-                  "maxConnections",
-                  "Max Connections",
-                  "number",
-                  "20",
-                  undefined,
-                  undefined,
-                  "Maximum database connections"
-                )}
-                {renderField(
-                  "connectionTimeout",
-                  "Connection Timeout (s)",
-                  "number",
-                  "30",
-                  undefined,
-                  undefined,
-                  "Database connection timeout"
-                )}
-                {renderField(
-                  "enableSSL",
-                  "Enable SSL",
-                  "switch",
-                  undefined,
-                  undefined,
-                  undefined,
-                  "Use SSL for database connections"
                 )}
               </CardContent>
             </Card>

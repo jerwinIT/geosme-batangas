@@ -9,6 +9,7 @@ interface DashboardWidgetProps {
   className?: string;
   onClick?: () => void;
   clickable?: boolean;
+  isLoading?: boolean;
 }
 
 const DashboardWidget: React.FC<DashboardWidgetProps> = ({
@@ -19,6 +20,7 @@ const DashboardWidget: React.FC<DashboardWidgetProps> = ({
   className = "",
   onClick,
   clickable = false,
+  isLoading = false,
 }) => {
   return (
     <div
@@ -31,7 +33,13 @@ const DashboardWidget: React.FC<DashboardWidgetProps> = ({
         <h2 className="text-sm font-medium text-muted-foreground">{title}</h2>
         {icon && <div className="text-xl text-primary-500">{icon}</div>}
       </div>
-      <div className="text-2xl font-semibold mt-1">{value}</div>
+      <div className="text-2xl font-semibold mt-1">
+        {isLoading ? (
+          <div className="h-8 w-12 bg-gray-200 animate-pulse rounded"></div>
+        ) : (
+          value
+        )}
+      </div>
       {footer && (
         <div className="text-xs text-muted-foreground mt-1">{footer}</div>
       )}

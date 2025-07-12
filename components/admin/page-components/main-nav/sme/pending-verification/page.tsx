@@ -215,9 +215,9 @@ export function PendingVerificationPage() {
   const pendingCount = businesses.length;
 
   return (
-    <div className="py-4 px-4">
+    <div className="py-2 sm:py-4 px-2 sm:px-4 lg:px-6">
       {/* Breadcrumbs */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -232,17 +232,17 @@ export function PendingVerificationPage() {
       </div>
 
       {/* Header section with title, description, and stats */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-text">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-text">
             Pending Verification
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Review and verify SME documents for approval
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full">
+        <div className="flex items-center gap-2 w-full lg:w-auto">
+          <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full w-full lg:w-auto justify-center">
             <Clock className="h-4 w-4" />
             <span className="text-sm font-medium">
               {pendingCount} Pending Review
@@ -252,15 +252,16 @@ export function PendingVerificationPage() {
       </div>
 
       {/* Search and Filter section */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <div className="w-full md:flex-1">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="w-full lg:flex-1">
           <SearchBar placeholder="Search pending SMEs..." />
         </div>
-        <div className="flex gap-2 md:justify-end">
+        <div className="flex gap-2 lg:justify-end w-full lg:w-auto">
           <Button
             variant="outline"
             icon={Filter}
             onClick={() => setFilters({ ...filters, status: "pending" })}
+            className="w-full lg:w-auto"
           >
             Filter: Pending Only
           </Button>
@@ -279,18 +280,20 @@ export function PendingVerificationPage() {
               className="border rounded-lg overflow-hidden"
             >
               {/* Business Header */}
-              <div className="p-4 bg-white hover:bg-gray-50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Building className="w-6 h-6 text-blue-600" />
+              <div className="p-3 sm:p-4 bg-white hover:bg-gray-50 transition-colors">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                  <div className="flex items-start sm:items-center space-x-3 sm:space-x-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Building className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">{business.name}</h3>
-                      <p className="text-sm text-gray-600">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-base sm:text-lg">
+                        {business.name}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-600">
                         {business.category} • {business.municipality}
                       </p>
-                      <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mt-1 text-xs text-gray-500 space-y-1 sm:space-y-0">
                         <span className="flex items-center">
                           <User className="w-3 h-3 mr-1" />
                           {business.ownerName || "N/A"}
@@ -307,10 +310,10 @@ export function PendingVerificationPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                     <Badge
                       variant="secondary"
-                      className="bg-yellow-100 text-yellow-800"
+                      className="bg-yellow-100 text-yellow-800 w-full sm:w-auto text-center"
                     >
                       <Clock className="w-3 h-3 mr-1" />
                       Pending Review
@@ -319,6 +322,7 @@ export function PendingVerificationPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => toggleExpanded(business.id)}
+                      className="w-full sm:w-auto"
                     >
                       <Eye className="w-4 h-4" />
                       {isExpanded ? "Hide" : "View"} Documents
@@ -330,20 +334,24 @@ export function PendingVerificationPage() {
               {/* Expanded Document Section */}
               {isExpanded && (
                 <div className="border-t bg-gray-50">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-medium text-gray-900">
+                  <div className="p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
+                      <h4 className="font-medium text-gray-900 text-sm sm:text-base">
                         Business Documents
                       </h4>
-                      <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full sm:w-auto"
+                        >
                           <Download className="w-4 h-4 mr-2" />
                           Download All
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-red-200 text-red-700 hover:bg-red-50"
+                          className="border-red-200 text-red-700 hover:bg-red-50 w-full sm:w-auto"
                           onClick={() => handleReject(business.id)}
                         >
                           <XCircle className="w-4 h-4 mr-2" />
@@ -352,6 +360,7 @@ export function PendingVerificationPage() {
                         <Button
                           size="sm"
                           onClick={() => handleApprove(business.id)}
+                          className="w-full sm:w-auto"
                         >
                           <CheckCircle className="w-4 h-4 mr-2" />
                           Approve
@@ -398,7 +407,7 @@ export function PendingVerificationPage() {
                       <h5 className="font-medium text-sm mb-2">
                         Business Summary
                       </h5>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                         <div>
                           <span className="text-gray-500">Address:</span>
                           <p className="font-medium">
